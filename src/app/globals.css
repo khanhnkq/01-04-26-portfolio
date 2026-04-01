@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Fz Bonestay';
+  src: url('/Fz%20Bonestay%20Font.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* === ĐIỀN MÃ MÀU TỪ FIGMA VÀO ĐÂY === */
+  
+  /* BACKGROUND COLOR */
+  --bg-primary: #238CFF; /* Màu nền xanh dương */
+  --text-paper-bg:#238CFF;
+  /* ACCENT COLORS */
+  --text-accent: #FFE06B; /* Màu vàng của chữ PORTFOLIO */
+  --text-white: #FFFFFF; /* Màu chữ trắng (2026, Developer) */
+  
+  /* FOLDER COLORS */
+  --folder-bg: #FFE06B; /* Màu bìa hồ sơ */
+  --folder-inner: #FFF3C4; /* Màu giấy nhạt bên trong */
+  --paper-bg: #FFF9EF; /* Màu tờ giấy trắng ở Frame 3 */
+
+  /* CUSTOM FONTS */
+  --font-bonestay: 'Fz Bonestay', cursive;
+}
+
+@theme inline {
+  --color-brand-blue: var(--bg-primary);
+  --color-brand-yellow: var(--text-accent);
+  --color-brand-white: var(--text-white);
+  --color-folder-main: var(--folder-bg);
+  --color-folder-light: var(--folder-inner);
+  --color-paper: var(--paper-bg);
+  
+  /* KẾT NỐI FONT CHO TAILWIND */
+  --font-sans: var(--font-montserrat), sans-serif; /* Gọi class: font-sans */
+  --font-script: var(--font-bonestay); /* Gọi class: font-script */
+
+  /* BỔ SUNG CÁC MỨC ĐỘ ĐẬM (WEIGHT) */
+  --font-weight-regular: 400; /* Gọi class: font-regular */
+  --font-weight-semibold: 600; /* Gọi class: font-semibold */
+  --font-weight-bold: 700; /* Gọi class: font-bold */
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-accent);
+  font-family: var(--font-sans);
+}
