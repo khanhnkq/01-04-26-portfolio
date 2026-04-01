@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ProjectType } from "@/data/projects";
+import BottomBar from "../ui/BottomBar";
 
 type ProjectSectionProps = {
   project: ProjectType;
@@ -18,7 +19,7 @@ export default function ProjectSection({ project, index }: ProjectSectionProps) 
   const isEven = index % 2 === 0;
 
   return (
-    <section id={`project-${project.id}`} className={`relative w-full min-h-[800px] flex items-center justify-center overflow-hidden border-t-8 border-brand-yellow py-20 px-4 md:px-12 lg:px-24 ${bgClass}`}>
+    <section id={`project-${project.id}`} className={`relative w-full min-h-[900px] flex items-center justify-center overflow-hidden border-t-8 border-brand-yellow py-20 px-4 md:px-12 lg:px-24 ${bgClass}`}>
       
       {/* Decorative Index Background */}
       <div className={`absolute top-10 ${isEven ? 'left-10 md:left-20' : 'right-10 md:right-20'} md:top-20 text-[10rem] md:text-[20rem] font-black font-sans text-brand-blue/5 leading-none pointer-events-none select-none z-0`}>
@@ -196,7 +197,7 @@ export default function ProjectSection({ project, index }: ProjectSectionProps) 
           </div>
         </motion.div>
       </div>
-
+<BottomBar />
     </section>
   );
 }

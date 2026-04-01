@@ -12,7 +12,8 @@ export default function HeroSection() {
 
   return (
     <section className="relative w-full min-h-screen bg-brand-blue flex flex-col items-center justify-end overflow-hidden pt-20 pb-[42px]">
-      
+     
+
       {/* ===== DECORATIVE BACKGROUND PATTERNS ===== */}
       {/* Corner Index Watermark */}
       <div className="absolute top-10 right-10 md:top-20 md:right-20 text-[10rem] md:text-[20rem] font-black font-sans text-brand-yellow/5 leading-none pointer-events-none select-none z-0">
