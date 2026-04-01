@@ -10,8 +10,45 @@ const montserratAlt = Montserrat_Alternates({
 });
 
 export const metadata: Metadata = {
-  title: "Portfolio 2026",
-  description: "Creative Developer Portfolio",
+  title: "Khanh Nguyen Kim | Fullstack Developer",
+  description:
+    "I'm a fullstack developer focused on designing scalable architectures and seamless user experiences with Java, Spring Boot, and React.",
+  keywords: [
+    "Khanh Nguyen Kim",
+    "khanhnkq",
+    "Fullstack Developer",
+    "Java",
+    "Spring Boot",
+    "React",
+    "Next.js",
+    "Portfolio",
+    "Software Engineer",
+    "Web Development",
+  ],
+  authors: [{ name: "Khanh Nguyen Kim" }],
+  icons: {
+    icon: "/favicon.ico",
+  },
+  openGraph: {
+    title: "Khanh Nguyen Kim | Fullstack Developer",
+    description:
+      "I'm a fullstack developer focused on designing scalable architectures and seamless user experiences with Java, Spring Boot, and React.",
+    type: "website",
+    url: "https://khanhnkq.vercel.app/",
+    images: [
+      {
+        url: "https://khanhnkq.vercel.app/avatar.jpg",
+        alt: "Khanh Nguyen Kim - Fullstack Developer",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Khanh Nguyen Kim | Fullstack Developer",
+    description:
+      "I'm a fullstack developer focused on designing scalable architectures and seamless user experiences with Java, Spring Boot, and React.",
+    images: ["https://khanhnkq.vercel.app/avatar.jpg"],
+  },
 };
 
 export default function RootLayout({
