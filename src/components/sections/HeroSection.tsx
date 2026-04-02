@@ -70,30 +70,8 @@ export default function HeroSection() {
       ))}
 
       {/* ===== FLOATING SVG DECORATIONS ===== */}
-      {[
-        { Doodle: StarDoodle, color: "text-brand-yellow/30", top: "12%", left: "18%", rotate: -15, delay: 1.3, size: "w-10 h-10 md:w-16 md:h-16" },
-        { Doodle: HeartDoodle, color: "text-brand-white/20", top: "8%", right: "20%", rotate: 25, delay: 1.5, size: "w-12 h-12 md:w-20 md:h-20" },
-        { Doodle: SparkleDoodle, color: "text-brand-yellow/30", top: "45%", left: "10%", rotate: -5, delay: 1.7, size: "w-8 h-8 md:w-12 md:h-12" },
-        { Doodle: CrownDoodle, color: "text-brand-white/20", bottom: "25%", right: "12%", rotate: 15, delay: 1.9, size: "w-14 h-14 md:w-20 md:h-20" },
-        { Doodle: SwirlDoodle, color: "text-brand-yellow/30", bottom: "25%", left: "25%", rotate: -20, delay: 2.1, size: "w-16 h-16 md:w-24 md:h-24" },
-        { Doodle: FlowerDoodle, color: "text-brand-white/20", top: "60%", right: "8%", rotate: 10, delay: 2.3, size: "w-12 h-12 md:w-16 md:h-16" },
-      ].map((item, i) => (
-        <motion.div
-          key={`doodle-${i}`}
-          className={`absolute ${item.size} ${item.color} pointer-events-none select-none z-0`}
-          style={{
-            top: item.top,
-            bottom: item.bottom,
-            left: item.left,
-            right: item.right,
-          }}
-          initial={{ opacity: 0, scale: 0, rotate: item.rotate * 2 }}
-          animate={{ opacity: 1, scale: 1, rotate: item.rotate }}
-          transition={{ type: "spring", stiffness: 150, damping: 12, delay: item.delay }}
-        >
-          <item.Doodle className="w-full h-full" />
-        </motion.div>
-      ))}
+      
+        
 
       {/* Background Text Overlay */}
       <motion.div 
