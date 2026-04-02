@@ -50,3 +50,13 @@ body {
   color: var(--text-accent);
   font-family: var(--font-sans);
 }
+
+/* Ẩn scrollbar */
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
