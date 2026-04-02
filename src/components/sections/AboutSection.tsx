@@ -3,6 +3,9 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import BottomBar from "@/components/ui/BottomBar";
+import Lottie from "lottie-react";
+import catPlayingAnimation from "../../../public/cat-playing-v2.json";
+
 
 const TECH_STACK = [
   { label: "React", icon: "react" },

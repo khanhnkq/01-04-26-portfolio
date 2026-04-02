@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import BottomBar from "@/components/ui/BottomBar";
+import Lottie from "lottie-react";
+import catPlayingAnimation from "../../../public/cat-playing-v2.json";
 
 export default function ThankYouSection() {
   return (
@@ -34,6 +36,10 @@ export default function ThankYouSection() {
       <div className="absolute top-6 left-6 md:top-12 md:left-12 w-16 h-16 md:w-24 md:h-24 border-t-2 border-l-2 border-brand-yellow/10 pointer-events-none z-0" />
       <div className="absolute bottom-16 right-6 md:bottom-20 md:right-12 w-16 h-16 md:w-24 md:h-24 border-b-2 border-r-2 border-brand-yellow/10 pointer-events-none z-0" />
 
+      {/* Cat Playing Animation */}
+      <div className="absolute bottom-2 right-2 md:bottom-0 md:right-0 w-32 h-32 md:w-72 md:h-72 z-10 pointer-events-none">
+        <Lottie animationData={catPlayingAnimation} loop={true} />
+      </div>
       {/* ===== BACKGROUND TEXT — same style as Hero ===== */}
       <motion.div 
         className="absolute top-10 md:top-0 left-0 w-full flex justify-center items-center px-4"

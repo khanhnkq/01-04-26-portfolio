@@ -18,7 +18,7 @@ export const PROJECTS: ProjectType[] = [
     tags: ["React 18", "TypeScript", "Supabase", "GSAP", "Framer Motion", "SEPAY"],
     demo: "https://www.quizken.com/",
     color: "bg-brand-blue",
-    image: "/quizken-preview.png",
+    image: "/quizken-preview-3d.png",
   },
   {
     id: 2,
@@ -28,7 +28,7 @@ export const PROJECTS: ProjectType[] = [
     tags: ["NextJs", "React Native", "TypeScript", "Tailwind"],
     demo: "https://thauphim-neon.vercel.app",
     color: "bg-brand-yellow",
-    image: "/thauphim-preview.jpg",
+    image: "/thauphim-preview-3d.png",
   },
   {
     id: 3,
@@ -38,7 +38,7 @@ export const PROJECTS: ProjectType[] = [
     tags: ["Spring Boot", "Spring Security", "Kafka", "MySQL", "Firebase", "WebSocket", "ReactJs"],
     demo: "https://connect-cg.vercel.app",
     color: "bg-brand-white",
-    image: "/connect-preview.png",
+    image: "/connect-preview-3d.png",
   },
   {
     id: 4,
@@ -48,7 +48,7 @@ export const PROJECTS: ProjectType[] = [
     tags: ["Java", "Spring Boot", "Thymeleaf", "MySQL", "WebSocket", "Flyway", "VNPay"],
     demo: "https://egov-cg.duckdns.org/",
     color: "bg-folder-light",
-    image: "/egov-preview.png",
+    image: "/egov-preview-3d.png",
   },
   {
     id: 5,
@@ -58,6 +58,6 @@ export const PROJECTS: ProjectType[] = [
     tags: ["React", "TypeScript", "Three.js", "Framer Motion", "Gemini API"],
     demo: "https://wonderkids-six.vercel.app/",
     color: "bg-brand-blue",
-    image: "/wonderkids-preview.png",
+    image: "/wonderkids-preview-3d.png",
   }
 ];
