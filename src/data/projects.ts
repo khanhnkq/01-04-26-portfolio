@@ -4,9 +4,10 @@ export type ProjectType = {
   category: string;
   description: string;
   tags: string[];
-  demo: string;
   color: string;
   image: string;
+  page_cover: string;
+  back_page_cover: string;
 };
 
 export const PROJECTS: ProjectType[] = [
@@ -19,6 +20,8 @@ export const PROJECTS: ProjectType[] = [
     demo: "https://www.quizken.com/",
     color: "bg-brand-blue",
     image: "/quizken-preview-3d.png",
+    page_cover: "/quizken-preview.png",
+    back_page_cover: "/back_page_cover_2.png",
   },
   {
     id: 2,
@@ -29,6 +32,8 @@ export const PROJECTS: ProjectType[] = [
     demo: "https://thauphim-neon.vercel.app",
     color: "bg-brand-yellow",
     image: "/thauphim-preview-3d.png",
+    page_cover: "/thauphim-preview.jpg",
+    back_page_cover: "/back_page_cover_3.png",
   },
   {
     id: 3,
@@ -39,6 +44,8 @@ export const PROJECTS: ProjectType[] = [
     demo: "https://connect-cg.vercel.app",
     color: "bg-brand-white",
     image: "/connect-preview-3d.png",
+    page_cover: "/connect-preview.png",
+    back_page_cover: "/back_page_cover_4.png",
   },
   {
     id: 4,
@@ -49,6 +56,8 @@ export const PROJECTS: ProjectType[] = [
     demo: "https://egov-cg.duckdns.org/",
     color: "bg-folder-light",
     image: "/egov-preview-3d.png",
+    page_cover: "/egov-preview.png",
+    back_page_cover: "/back_page_cover_5.png",
   },
   {
     id: 5,
@@ -59,5 +68,7 @@ export const PROJECTS: ProjectType[] = [
     demo: "https://wonderkids-six.vercel.app/",
     color: "bg-brand-blue",
     image: "/wonderkids-preview-3d.png",
+    page_cover: "/wonderkids-preview.png",
+    back_page_cover: "/back_page_cover_1.jpg",
   }
 ];

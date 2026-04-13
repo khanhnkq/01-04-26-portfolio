@@ -7,10 +7,13 @@ import BottomBar from "@/components/ui/BottomBar";
 import { StarDoodle, HeartDoodle, SparkleDoodle, CrownDoodle, SwirlDoodle, FlowerDoodle } from "@/components/ui/Doodles";
 
 import { PROJECTS } from "@/data/projects";
+import { useAtom } from 'jotai';
+import { pageAtom } from '@/store/bookStore';
 
 export default function HeroSection() {
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
   const [poppingCat, setPoppingCat] = useState<number | null>(null);
+  const [, setPage] = useAtom(pageAtom);
 
   return (
     <section className="relative w-full min-h-screen bg-brand-blue flex flex-col items-center justify-end overflow-hidden pt-20 pb-[42px]">
@@ -296,7 +299,8 @@ export default function HeroSection() {
                       setPoppingCat(null);
                       setIsProjectsOpen(false);
                       setTimeout(() => {
-                        document.getElementById(`project-${project.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        setPage(index + 1);
+                        document.getElementById('book-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                       }, 400);
                     }, 1200); // Wait 1.2s for cat animation
                   }}
