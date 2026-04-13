@@ -82,11 +82,10 @@ export const pages = [
 const Page = ({ number, front, back, page, opened, bookClosed, ...props }: any) => {
   const [picture, picture2] = useTexture([front, back]);
   picture.colorSpace = picture2.colorSpace = SRGBColorSpace;
-
-  const group = useRef<any>();
+  const group = useRef<any>(null);
   const turnedAt = useRef(0);
   const lastOpened = useRef(opened);
-  const skinnedMeshRef = useRef<any>();
+  const skinnedMeshRef = useRef<any>(null);
 
   const manualSkinnedMesh = useMemo(() => {
     const bones = [];

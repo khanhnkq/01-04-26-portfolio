@@ -4,6 +4,7 @@ export type ProjectType = {
   category: string;
   description: string;
   tags: string[];
+  demo?: string;
   color: string;
   image: string;
   page_cover: string;
