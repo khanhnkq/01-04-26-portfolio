@@ -69,6 +69,6 @@ export const PROJECTS: ProjectType[] = [
     color: "bg-brand-blue",
     image: "/wonderkids-preview-3d.png",
     page_cover: "/wonderkids-preview.png",
-    back_page_cover: "/back_page_cover_1.jpg",
+    back_page_cover: "/back_page_cover_6.png",
   }
 ];

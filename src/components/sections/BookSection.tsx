@@ -21,9 +21,9 @@ const SceneRig = () => {
     let targetX = 0; // Base camera centered
     if (page > 0 && page < pages.length - 1) {
       const isEven = (page - 1) % 2 === 0;
-      // If even, text is left, so camera moves left (-1.5) to push the book to the right.
-      // If odd, text is right, so camera moves right (1.5) to push the book to the left.
-      targetX = isEven ? -1.5 : 1.5;
+      // If even, text is left, so camera moves left (-1.1) to push the book to the right.
+      // If odd, text is right, so camera moves right (1.1) to push the book to the left.
+      targetX = isEven ? -1.1 : 1.1;
     }
     easing.damp3(state.camera.position, [targetX, 1, 4], 0.4, delta);
   });

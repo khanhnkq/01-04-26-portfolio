@@ -74,7 +74,7 @@ const pageMaterials = [
 
 // MAPPING PROJECTS TO PAGES
 export const pages = [
-  { front: "/front_cover.png", back: "/back_page_cover_1.png" }, // Cover
+  { front: "/front_cover.png", back: "/back_page_cover_6.png" }, // Cover
   ...PROJECTS.map((p) => ({ front: p.page_cover, back: p.back_page_cover })),
   { front: "/back_cover.jpg", back: "/back_cover.jpg" }, // Back Cover
 ];
