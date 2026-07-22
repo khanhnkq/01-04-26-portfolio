@@ -70,7 +70,7 @@ export const PROJECTS: ProjectType[] = [
     color: "bg-brand-blue",
     image: "/wonderkids-preview-3d.png",
     page_cover: "/wonderkids-preview.png",
-    back_page_cover: "/back_page_cover_6.png",
+    back_page_cover: "/doccleaner-preview.png",
   },
   {
     id: 6,
@@ -82,6 +82,6 @@ export const PROJECTS: ProjectType[] = [
     color: "bg-brand-yellow",
     image: "/doccleaner-preview-3d.png",
     page_cover: "/doccleaner-preview.png",
-    back_page_cover: "/back_page_cover_1.png",
+    back_page_cover: "/back_page_cover_6.png",
   }
 ];

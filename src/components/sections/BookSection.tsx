@@ -248,7 +248,7 @@ export default function BookSection() {
   }, []);
 
   const project = page > 0 && page <= PROJECTS.length ? PROJECTS[page - 1] : null;
-  const isEven = project ? ((page - 1) % 2 === 1) : true;
+  const isEven = project ? ((page - 1) % 2 === 0) : true;
   const bgClass = project ? (isEven ? "bg-paper" : "bg-brand-white") : "bg-paper";
 
   if (!mounted) {
