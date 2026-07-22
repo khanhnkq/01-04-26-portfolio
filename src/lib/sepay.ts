@@ -3,7 +3,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 
 const sePayWebhookSchema = z.object({
-  id: z.union([z.number().int().positive(), z.string().min(1)]),
+  id: z.union([z.number().int().nonnegative(), z.string().min(1)]),
   gateway: z.string().min(1),
   transactionDate: z.string().min(1),
   accountNumber: z.string().min(1),

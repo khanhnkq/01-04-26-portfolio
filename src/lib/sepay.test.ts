@@ -56,6 +56,12 @@ describe("SePay webhook security", () => {
 });
 
 describe("SePay payment matching", () => {
+  it("accepts SePay Send Test payloads with a mock id of zero", () => {
+    const parsed = parseSePayWebhook(JSON.stringify({ ...payload, id: 0 }));
+
+    expect(parsed.id).toBe(0);
+  });
+
   it("matches an incoming transaction by account, code and amount", () => {
     const parsed = parseSePayWebhook(JSON.stringify(payload));
 

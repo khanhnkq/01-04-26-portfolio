@@ -42,6 +42,10 @@ export async function POST(request: Request) {
     }
 
     const payload = parseSePayWebhook(rawBody);
+    if (payload.id === 0 || payload.id === "0") {
+      return Response.json({ success: true, test: true });
+    }
+
     if (
       payload.transferType !== "in" ||
       payload.accountNumber !== env.DONATE_ACCOUNT_NO

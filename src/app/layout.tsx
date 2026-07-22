@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Montserrat_Alternates } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const montserratAlt = Montserrat_Alternates({
@@ -63,6 +64,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col overflow-x-hidden font-sans">
         {children}
+        <Analytics />
       </body>
     </html>
   );
