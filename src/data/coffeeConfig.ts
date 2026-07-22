@@ -14,14 +14,14 @@ export const MAX_CUPS = 20;
 export const COFFEE_PRESETS: CoffeePreset[] = [
   {
     count: 1,
-    label: "1 Coffee",
+    label: "One cup",
     amountVnd: COFFEE_PRICE_VND,
     amountUsd: 1.5,
     icon: "(^ ᴗ ^)",
   },
   {
     count: 3,
-    label: "3 Coffees",
+    label: "Three cups",
     amountVnd: 3 * COFFEE_PRICE_VND,
     amountUsd: 4.5,
     icon: "(♡ ‿ ♡)",
@@ -29,7 +29,7 @@ export const COFFEE_PRESETS: CoffeePreset[] = [
   },
   {
     count: 5,
-    label: "5 Coffees",
+    label: "Five cups",
     amountVnd: 5 * COFFEE_PRICE_VND,
     amountUsd: 7.5,
     icon: "(づ｡◕‿‿◕｡)づ",

@@ -19,8 +19,6 @@ interface CoffeeFormProps {
   onDonationPaid: () => void | Promise<void>;
 }
 
-type CopyField = "account" | "paymentCode" | null;
-
 const PRESET_KAOMOJIS = ["(^ ᴗ ^)", "(♡ ‿ ♡)", "(づ｡◕‿‿◕｡)づ"];
 const ACTION_BUTTON_CLASS =
   "w-full min-h-14 px-5 py-4 rounded-2xl font-black text-xs sm:text-sm uppercase tracking-wider transition-[transform,background-color,box-shadow,opacity] shadow-xl flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98] motion-reduce:transform-none motion-reduce:transition-none";
@@ -36,7 +34,6 @@ export default function CoffeeForm({
   const [isCreating, setIsCreating] = useState(false);
   const [isExpired, setIsExpired] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [copiedField, setCopiedField] = useState<CopyField>(null);
   const [isPaidToastVisible, setIsPaidToastVisible] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
@@ -114,16 +111,6 @@ export default function CoffeeForm({
     };
   }, [checkoutExpiresAt, checkoutId, checkoutStatus, isExpired, onDonationPaid]);
 
-  const copyText = async (value: string, field: Exclude<CopyField, null>) => {
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopiedField(field);
-      window.setTimeout(() => setCopiedField(null), 2_000);
-    } catch {
-      setError("Không thể sao chép tự động. Vui lòng sao chép thủ công.");
-    }
-  };
-
   const createCheckout = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isCreating || isLocked) {
@@ -142,8 +129,14 @@ export default function CoffeeForm({
       });
       const data = (await response.json()) as DonationCheckout | { error: string };
 
+      if (response.status === 429) {
+        throw new Error(
+          "That is a lot of kindness at once. Please wait a little, then try again.",
+        );
+      }
+
       if (!response.ok || "error" in data) {
-        throw new Error("error" in data ? data.error : "Unable to create donation");
+        throw new Error("That did not go through. Please give it another try.");
       }
 
       setCheckout(data);
@@ -151,7 +144,7 @@ export default function CoffeeForm({
       setError(
         createError instanceof Error
           ? createError.message
-          : "Không thể tạo mã thanh toán lúc này.",
+          : "That did not go through. Please give it another try.",
       );
     } finally {
       setIsCreating(false);
@@ -175,21 +168,21 @@ export default function CoffeeForm({
         className="w-full bg-paper text-gray-900 rounded-3xl p-6 sm:p-8 md:p-10 border-4 border-brand-yellow relative overflow-hidden"
       >
       <div className="absolute top-0 right-0 bg-brand-yellow text-brand-blue font-black px-6 py-2 rounded-bl-2xl text-xs uppercase tracking-widest flex items-center gap-2 shadow-sm">
-        <span>(♡ ‿ ♡)</span> SePay Verified
+        <span>(♡ ‿ ♡)</span> With kindness
       </div>
 
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-brand-blue uppercase tracking-tight mb-1.5">
-        BUY A COFFEE (づ｡◕‿‿◕｡)づ
+        “A little coffee goes a long way.”
       </h2>
       <p className="text-gray-600 font-medium text-xs sm:text-sm mb-6">
-        Tạo VietQR riêng và tự động xác nhận giao dịch qua SePay.
+        Choose a cup and leave a note. Both mean more than you know.
       </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mb-6">
         <div className="lg:col-span-7 space-y-4">
           <fieldset disabled={isLocked || isCreating}>
             <legend className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-              1. Select Coffee Amount
+              Choose your cup
             </legend>
             <div className="grid grid-cols-3 gap-3 mb-3">
               {COFFEE_PRESETS.map((preset, index) => {
@@ -216,7 +209,7 @@ export default function CoffeeForm({
                         isSelected ? "text-brand-white" : "text-gray-500"
                       }`}
                     >
-                      {preset.amountVnd.toLocaleString("vi-VN")} đ
+                      {preset.amountVnd.toLocaleString("vi-VN")} VND
                     </span>
                   </button>
                 );
@@ -225,12 +218,12 @@ export default function CoffeeForm({
 
             <div className="flex items-center justify-between bg-white px-4 py-2.5 rounded-2xl border-2 border-gray-200 text-xs">
               <span className="font-bold text-gray-600 uppercase text-xs">
-                Custom Cups Count:
+                More coffee?
               </span>
               <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  aria-label="Giảm số ly cà phê"
+                  aria-label="Fewer cups"
                   onClick={() => setCupsCount(Math.max(1, cupsCount - 1))}
                   className="w-8 h-8 rounded-xl bg-gray-100 font-black text-base text-gray-700 hover:bg-brand-yellow hover:text-brand-blue transition-colors flex items-center justify-center cursor-pointer disabled:cursor-not-allowed"
                 >
@@ -241,7 +234,7 @@ export default function CoffeeForm({
                 </span>
                 <button
                   type="button"
-                  aria-label="Tăng số ly cà phê"
+                  aria-label="More cups"
                   onClick={() => setCupsCount(Math.min(MAX_CUPS, cupsCount + 1))}
                   className="w-8 h-8 rounded-xl bg-gray-100 font-black text-base text-gray-700 hover:bg-brand-yellow hover:text-brand-blue transition-colors flex items-center justify-center cursor-pointer disabled:cursor-not-allowed"
                 >
@@ -256,7 +249,7 @@ export default function CoffeeForm({
               htmlFor="supporter-name"
               className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5"
             >
-              2. Your Name / Nickname (Optional)
+              Your name, if you wish
             </label>
             <input
               id="supporter-name"
@@ -265,7 +258,7 @@ export default function CoffeeForm({
               disabled={isLocked || isCreating}
               value={name}
               onChange={(event) => setName(event.target.value)}
-              placeholder="E.g., Alex Dev, Anonymous Friend..."
+              placeholder="A name, a nickname, or simply “A friend”"
               className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-brand-blue outline-none text-sm font-medium bg-white disabled:opacity-70"
             />
           </div>
@@ -275,7 +268,7 @@ export default function CoffeeForm({
               htmlFor="supporter-message"
               className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5"
             >
-              3. Message / Wishes (Optional)
+              A little note, if you wish
             </label>
             <textarea
               id="supporter-message"
@@ -284,7 +277,7 @@ export default function CoffeeForm({
               disabled={isLocked || isCreating}
               value={message}
               onChange={(event) => setMessage(event.target.value)}
-              placeholder="Write a sweet note or thoughts..."
+              placeholder="Leave a few kind words for the road..."
               className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-brand-blue outline-none text-sm font-medium bg-white resize-none disabled:opacity-70"
             />
           </div>
@@ -292,60 +285,28 @@ export default function CoffeeForm({
 
         <div className="lg:col-span-5 bg-white p-5 rounded-2xl border-2 border-brand-blue/20 flex flex-col items-center text-center min-h-[390px] justify-center">
           <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">
-            {checkout ? "Scan VietQR To Transfer" : "Secure VietQR Preview"}
+            {checkout ? "Scan when you are ready" : "Your coffee is waiting"}
           </span>
           <span className="text-2xl sm:text-3xl font-black text-brand-blue mb-3">
-            {(checkout?.amount ?? totalAmount).toLocaleString("vi-VN")} VNĐ
+            {(checkout?.amount ?? totalAmount).toLocaleString("vi-VN")} VND
           </span>
 
           {checkout ? (
-            <>
-              <div className="bg-white p-3 rounded-2xl border border-gray-200 shadow-md mb-3">
-                {/* The bank-generated QR must be fetched fresh and must not pass through image optimization caches. */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={checkout.qrUrl}
-                  alt={`VietQR ${checkout.paymentCode}`}
-                  className="w-44 h-44 sm:w-52 sm:h-52 object-contain rounded-lg"
-                />
-              </div>
-              <div className="w-full bg-gray-50 p-3 rounded-xl text-left text-xs space-y-2 border border-gray-200 font-medium">
-                <div className="flex justify-between items-center gap-2">
-                  <span className="text-gray-500">Bank:</span>
-                  <span className="font-bold text-gray-800">{checkout.bank.code}</span>
-                </div>
-                <div className="flex justify-between items-center gap-2">
-                  <span className="text-gray-500">Account:</span>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      void copyText(checkout.bank.accountNumber, "account")
-                    }
-                    className="font-black text-brand-blue font-mono text-sm cursor-pointer"
-                  >
-                    {checkout.bank.accountNumber} · {copiedField === "account" ? "Copied" : "Copy"}
-                  </button>
-                </div>
-                <div className="flex justify-between items-center gap-2 pt-2 border-t border-gray-200">
-                  <span className="text-gray-500">Transfer memo:</span>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      void copyText(checkout.paymentCode, "paymentCode")
-                    }
-                    className="font-black text-amber-700 bg-amber-50 px-2 py-1 rounded font-mono cursor-pointer"
-                  >
-                    {checkout.paymentCode} · {copiedField === "paymentCode" ? "Copied" : "Copy"}
-                  </button>
-                </div>
-              </div>
-            </>
+            <div className="bg-white p-3 rounded-2xl border border-gray-200 shadow-md">
+              {/* The bank-generated QR must be fetched fresh and must not pass through image optimization caches. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={checkout.qrUrl}
+                alt="Scan code for your coffee"
+                className="w-44 h-44 sm:w-52 sm:h-52 object-contain rounded-lg"
+              />
+            </div>
           ) : (
             <div className="w-52 h-52 rounded-2xl border-2 border-dashed border-brand-blue/20 bg-brand-blue/5 flex flex-col items-center justify-center px-6 text-brand-blue">
               <span className="text-4xl mb-3">☕</span>
-              <span className="font-black text-sm uppercase">Create your QR</span>
+              <span className="font-black text-sm uppercase">Almost there</span>
               <span className="text-xs mt-2 text-gray-500">
-                Mã chuyển khoản riêng được tạo ở bước tiếp theo.
+                Your coffee will appear here.
               </span>
             </div>
           )}
@@ -358,7 +319,7 @@ export default function CoffeeForm({
           onClick={resetCheckout}
           className={`${ACTION_BUTTON_CLASS} bg-brand-blue text-brand-yellow hover:bg-blue-600`}
         >
-          GỬI THÊM MỘT LY CÀ PHÊ
+          SEND ANOTHER COFFEE
         </button>
       ) : isExpired ? (
         <button
@@ -366,7 +327,7 @@ export default function CoffeeForm({
           onClick={resetCheckout}
           className={`${ACTION_BUTTON_CLASS} bg-gray-700 text-white hover:bg-gray-800`}
         >
-          QR EXPIRED · CREATE A NEW ONE
+          TRY AGAIN
         </button>
       ) : (
         <button
@@ -375,12 +336,12 @@ export default function CoffeeForm({
           className={`${ACTION_BUTTON_CLASS} bg-brand-blue text-brand-yellow hover:bg-blue-600 disabled:cursor-wait disabled:opacity-80`}
         >
           {isCreating
-            ? "CREATING SECURE VIETQR..."
+            ? "GETTING IT READY..."
             : checkout?.status === "amount_mismatch"
-              ? "TRANSFER AMOUNT DOES NOT MATCH"
+              ? "CHECK THE AMOUNT"
               : checkout
-                ? "WAITING FOR SEPAY VERIFICATION..."
-                : "CREATE SECURE VIETQR (づ｡◕‿‿◕｡)づ"}
+                ? "WAITING FOR YOUR COFFEE..."
+                : "SEND A COFFEE"}
         </button>
       )}
 
@@ -404,7 +365,7 @@ export default function CoffeeForm({
             role="status"
             className="mt-4 p-4 rounded-2xl bg-amber-500 text-white font-bold text-xs sm:text-sm text-center shadow-lg"
           >
-            SePay đã nhận giao dịch nhưng số tiền chưa khớp. Vui lòng chuyển đúng số tiền hiển thị với cùng nội dung.
+            The amount was a little different. Please scan again using the exact amount shown above.
           </motion.div>
         ) : null}
       </AnimatePresence>
@@ -433,16 +394,16 @@ export default function CoffeeForm({
             </div>
             <div className="min-w-0 flex-1 pt-0.5">
               <p className="text-sm font-black uppercase tracking-wide text-brand-yellow">
-                Thanh toán đã xác nhận
+                Coffee received
               </p>
               <p className="mt-1 text-xs font-semibold leading-relaxed text-white/85 sm:text-sm">
-                Cảm ơn bạn! Lời nhắn đã được đăng lên danh sách supporters.
+                Thank you. Your coffee and your note just made my day.
               </p>
             </div>
             <button
               type="button"
               onClick={() => setIsPaidToastVisible(false)}
-              aria-label="Đóng thông báo"
+              aria-label="Close message"
               className="flex size-10 shrink-0 items-center justify-center rounded-xl text-xl leading-none text-white/70 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-yellow"
             >
               ×
