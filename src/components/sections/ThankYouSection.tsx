@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 import BottomBar from "@/components/ui/BottomBar";
 import Lottie from "lottie-react";
 import catPlayingAnimation from "../../../public/cat-playing-v2.json";
@@ -133,6 +134,14 @@ export default function ThankYouSection() {
           <span className="relative font-script text-brand-yellow text-3xl md:text-5xl mt-4">
             {`(^ ▽ ^)`}
           </span>
+          
+          <Link
+            href="/buy-me-a-coffee"
+            className="relative mt-6 px-6 py-3 rounded-full bg-brand-blue text-brand-yellow font-black text-sm uppercase tracking-wider hover:bg-blue-600 hover:scale-105 transition-all shadow-lg flex items-center gap-2 z-30 cursor-pointer"
+          >
+            <span>☕</span>
+            <span>Buy Me A Coffee</span>
+          </Link>
         </motion.div>
       </motion.div>
 
