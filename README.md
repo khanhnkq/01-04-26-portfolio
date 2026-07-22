@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Khanh Nguyen Kim — Portfolio
 
-## Getting Started
+Next.js 16 portfolio with a SePay-verified “Buy me a coffee” flow backed by Neon Postgres.
 
-First, run the development server:
+## Local development
 
 ```bash
+npm install
+cp .env.example .env.local
+npm run db:migrate
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Donate configuration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a pooled connection string in Neon and set the following server-side variables in `.env.local` and in the deployment environment:
 
-## Learn More
+```dotenv
+DATABASE_URL=postgresql://...
+SEPAY_WEBHOOK_SECRET=...
+SEPAY_API_TOKEN=...
+SEPAY_API_BASE_URL=https://userapi.sepay.vn/v2
+CRON_SECRET=...
+DONATE_BANK_CODE=MBBank
+DONATE_ACCOUNT_NO=...
+DONATE_ACCOUNT_NAME=...
+```
 
-To learn more about Next.js, take a look at the following resources:
+Never prefix these variables with `NEXT_PUBLIC_` and never commit their values.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+In SePay:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Link the receiving bank account.
+2. Configure payment codes with prefix `CF` and an eight-digit numeric suffix.
+3. Create an **incoming transfer** webhook for `https://YOUR_DOMAIN/api/webhooks/sepay`.
+4. Select JSON and HMAC-SHA256 authentication, then copy the same secret into `SEPAY_WEBHOOK_SECRET`.
+5. Use **Send test** and confirm the endpoint returns HTTP 200 with `{ "success": true }`.
 
-## Deploy on Vercel
+The webhook checks the raw-body HMAC and five-minute timestamp window before parsing JSON. A donation is published only when the receiving account, payment code and exact amount match. `sepay_transactions.sepay_id` is the idempotency key.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Database
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The schema lives in `src/db/schema.ts`; generated SQL migrations live in `drizzle/`.
+
+```bash
+npm run db:generate
+npm run db:migrate
+npm run db:studio
+```
+
+The initial migration creates:
+
+- `donations`: pending/paid state and public supporter messages.
+- `sepay_transactions`: immutable transaction matching/audit records.
+
+## Reconciliation
+
+`vercel.json` schedules `/api/cron/reconcile-sepay` daily. Vercel sends `Authorization: Bearer $CRON_SECRET`; the endpoint queries the last 48 hours from SePay API v2 and reuses the same idempotent database processor as the webhook.
+
+For non-Vercel deployments, call the endpoint from another scheduler with the same authorization header.
+
+## Verification
+
+```bash
+npm test
+npm run lint
+npm run build
+```
+
+Before production, verify in this order:
+
+1. Unit tests with local fixtures.
+2. SePay Test mode with a simulated transaction.
+3. A small real transfer over the production HTTPS webhook.

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { SupporterMessage } from "@/data/coffeeConfig";
+import type { SupporterMessage } from "@/types/donation";
 
 interface SupporterWallProps {
   supporters: SupporterMessage[];
@@ -10,6 +10,13 @@ interface SupporterWallProps {
 
 function SupporterCard({ item, index }: { item: SupporterMessage; index: number }) {
   const fileId = `SUPPORTER_${String((index % 99) + 1).padStart(2, "0")}.EXE`;
+  const createdAt = new Date(item.createdAt);
+  const displayedDate = Number.isNaN(createdAt.getTime())
+    ? item.createdAt
+    : new Intl.DateTimeFormat("vi-VN", {
+        dateStyle: "medium",
+        timeStyle: "short",
+      }).format(createdAt);
 
   return (
     <div className="relative w-[280px] sm:w-[310px] flex-shrink-0 group select-none my-4">
@@ -43,7 +50,7 @@ function SupporterCard({ item, index }: { item: SupporterMessage; index: number 
                 SUPPORTER MESSAGE
               </span>
               <span className="font-mono text-[9px] text-gray-400 font-semibold">
-                {item.createdAt}
+                {displayedDate}
               </span>
             </div>
 

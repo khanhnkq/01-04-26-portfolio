@@ -1,35 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import CoffeeForm from "@/components/coffee/CoffeeForm";
 import SupporterWall from "@/components/coffee/SupporterWall";
 import BottomBar from "@/components/ui/BottomBar";
-import { INITIAL_SUPPORTERS, SupporterMessage } from "@/data/coffeeConfig";
+import { useSupporters } from "@/hooks/useSupporters";
 
 export default function BuyMeACoffeePage() {
   const [cupsCount, setCupsCount] = useState<number>(3);
-  const [supporters, setSupporters] = useState<SupporterMessage[]>([]);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("portfolio_coffee_supporters");
-    if (saved) {
-      try {
-        setSupporters(JSON.parse(saved));
-      } catch {
-        setSupporters(INITIAL_SUPPORTERS);
-      }
-    } else {
-      setSupporters(INITIAL_SUPPORTERS);
-    }
-  }, []);
-
-  const handleAddSupporter = (newSupporter: SupporterMessage) => {
-    const updated = [newSupporter, ...supporters];
-    setSupporters(updated);
-    localStorage.setItem("portfolio_coffee_supporters", JSON.stringify(updated));
-  };
+  const { supporters, refreshSupporters } = useSupporters();
 
   return (
     <main className="w-full min-h-screen bg-brand-blue text-brand-yellow flex flex-col justify-between relative overflow-hidden pb-[42px]">
@@ -79,7 +59,7 @@ export default function BuyMeACoffeePage() {
         <CoffeeForm
           cupsCount={cupsCount}
           setCupsCount={setCupsCount}
-          onSupporterAdd={handleAddSupporter}
+          onDonationPaid={refreshSupporters}
         />
       </div>
 

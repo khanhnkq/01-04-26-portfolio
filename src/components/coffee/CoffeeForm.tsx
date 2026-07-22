@@ -1,102 +1,201 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { COFFEE_PRESETS, BANK_CONFIG, getVietQRUrl, SupporterMessage } from "@/data/coffeeConfig";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+
+import {
+  COFFEE_PRESETS,
+  COFFEE_PRICE_VND,
+  MAX_CUPS,
+} from "@/data/coffeeConfig";
+import type {
+  DonationCheckout,
+  DonationStatusResponse,
+} from "@/types/donation";
 
 interface CoffeeFormProps {
   cupsCount: number;
   setCupsCount: (count: number) => void;
-  onSupporterAdd: (supporter: SupporterMessage) => void;
+  onDonationPaid: () => void | Promise<void>;
 }
+
+type CopyField = "account" | "paymentCode" | null;
 
 const PRESET_KAOMOJIS = ["(^ ᴗ ^)", "(♡ ‿ ♡)", "(づ｡◕‿‿◕｡)づ"];
 
 export default function CoffeeForm({
   cupsCount,
   setCupsCount,
-  onSupporterAdd,
+  onDonationPaid,
 }: CoffeeFormProps) {
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [checkout, setCheckout] = useState<DonationCheckout | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const [isExpired, setIsExpired] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [copiedField, setCopiedField] = useState<CopyField>(null);
 
-  const currentPreset = COFFEE_PRESETS.find((p) => p.count === cupsCount);
-  const totalAmount = currentPreset
-    ? currentPreset.amountVnd
-    : cupsCount * 30000;
+  const totalAmount = cupsCount * COFFEE_PRICE_VND;
+  const isLocked = Boolean(checkout && checkout.status !== "paid" && !isExpired);
+  const checkoutId = checkout?.id;
+  const checkoutStatus = checkout?.status;
+  const checkoutExpiresAt = checkout?.expiresAt;
 
-  const memo = `${name.trim() ? name.trim() : "Friend"}-${cupsCount}Coffee`;
-  const qrUrl = getVietQRUrl(totalAmount, memo);
+  useEffect(() => {
+    if (!checkoutId || !checkoutExpiresAt || checkoutStatus === "paid" || isExpired) {
+      return;
+    }
 
-  const handleCopyAccount = () => {
-    navigator.clipboard.writeText(BANK_CONFIG.accountNo);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
-  };
+    let isActive = true;
 
-  const handleConfirmSent = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newSupporter: SupporterMessage = {
-      id: `sup-${Date.now()}`,
-      name: name.trim() || "Kind Friend (^ ᴗ ^)",
-      cups: cupsCount,
-      amount: totalAmount,
-      message: message.trim() || "Enjoy the warm coffee! (♡ ‿ ♡)",
-      createdAt: "Just now",
-      avatarBg: "#FFE06B",
+    const checkStatus = async () => {
+      try {
+        const response = await fetch(`/api/donations/${checkoutId}`, {
+          cache: "no-store",
+        });
+        if (!response.ok) {
+          return;
+        }
+
+        const data = (await response.json()) as DonationStatusResponse;
+        if (!isActive) {
+          return;
+        }
+
+        setCheckout((current) => {
+          if (!current || current.status === data.status) {
+            return current;
+          }
+          return { ...current, status: data.status };
+        });
+
+        if (data.status === "paid") {
+          setError(null);
+          await onDonationPaid();
+        }
+      } catch {
+        // A transient polling error should not destroy an active checkout.
+      }
     };
 
-    onSupporterAdd(newSupporter);
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-    }, 4500);
+    const remainingMs = new Date(checkoutExpiresAt).getTime() - Date.now();
+    if (remainingMs <= 0) {
+      setIsExpired(true);
+      return;
+    }
+
+    void checkStatus();
+    const intervalId = window.setInterval(() => void checkStatus(), 3_000);
+    const timeoutId = window.setTimeout(() => setIsExpired(true), remainingMs);
+
+    return () => {
+      isActive = false;
+      window.clearInterval(intervalId);
+      window.clearTimeout(timeoutId);
+    };
+  }, [checkoutExpiresAt, checkoutId, checkoutStatus, isExpired, onDonationPaid]);
+
+  const copyText = async (value: string, field: Exclude<CopyField, null>) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedField(field);
+      window.setTimeout(() => setCopiedField(null), 2_000);
+    } catch {
+      setError("Không thể sao chép tự động. Vui lòng sao chép thủ công.");
+    }
+  };
+
+  const createCheckout = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isCreating || isLocked) {
+      return;
+    }
+
+    setIsCreating(true);
+    setError(null);
+    setIsExpired(false);
+
+    try {
+      const response = await fetch("/api/donations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cups: cupsCount, name, message }),
+      });
+      const data = (await response.json()) as DonationCheckout | { error: string };
+
+      if (!response.ok || "error" in data) {
+        throw new Error("error" in data ? data.error : "Unable to create donation");
+      }
+
+      setCheckout(data);
+    } catch (createError) {
+      setError(
+        createError instanceof Error
+          ? createError.message
+          : "Không thể tạo mã thanh toán lúc này.",
+      );
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const resetCheckout = () => {
+    setCheckout(null);
+    setIsExpired(false);
+    setError(null);
+    setName("");
+    setMessage("");
+    setCupsCount(3);
   };
 
   return (
-    <div className="w-full bg-paper text-gray-900 rounded-3xl p-6 sm:p-8 md:p-10  border-4 border-brand-yellow relative overflow-hidden">
-      {/* Decorative Stamp Header */}
+    <form
+      onSubmit={createCheckout}
+      className="w-full bg-paper text-gray-900 rounded-3xl p-6 sm:p-8 md:p-10 border-4 border-brand-yellow relative overflow-hidden"
+    >
       <div className="absolute top-0 right-0 bg-brand-yellow text-brand-blue font-black px-6 py-2 rounded-bl-2xl text-xs uppercase tracking-widest flex items-center gap-2 shadow-sm">
-        <span>(♡ ‿ ♡)</span> VietQR Instant
+        <span>(♡ ‿ ♡)</span> SePay Verified
       </div>
 
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-brand-blue uppercase tracking-tight mb-1.5">
         BUY A COFFEE (づ｡◕‿‿◕｡)づ
       </h2>
       <p className="text-gray-600 font-medium text-xs sm:text-sm mb-6">
-        Support via instant VietQR code with customized amount & memo!
+        Tạo VietQR riêng và tự động xác nhận giao dịch qua SePay.
       </p>
 
-      {/* Main 2-Column Grid inside Form */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mb-6">
-
-        {/* Left Column: Presets + Inputs */}
         <div className="lg:col-span-7 space-y-4">
-          {/* Presets */}
-          <div>
-            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+          <fieldset disabled={isLocked || isCreating}>
+            <legend className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
               1. Select Coffee Amount
-            </label>
+            </legend>
             <div className="grid grid-cols-3 gap-3 mb-3">
-              {COFFEE_PRESETS.map((preset, i) => {
+              {COFFEE_PRESETS.map((preset, index) => {
                 const isSelected = cupsCount === preset.count;
                 return (
                   <button
                     key={preset.count}
                     type="button"
                     onClick={() => setCupsCount(preset.count)}
-                    className={`relative flex flex-col items-center justify-center py-3.5 px-2 rounded-2xl border-2 transition-all cursor-pointer font-sans ${isSelected
+                    className={`relative flex flex-col items-center justify-center py-3.5 px-2 rounded-2xl border-2 transition-all cursor-pointer font-sans disabled:cursor-not-allowed disabled:opacity-70 ${
+                      isSelected
                         ? "bg-brand-blue text-brand-yellow border-brand-blue shadow-lg scale-105"
                         : "bg-white text-gray-800 border-gray-200 hover:border-brand-blue/50"
-                      }`}
+                    }`}
                   >
                     <span className="font-mono text-xs font-bold mb-1">
-                      {PRESET_KAOMOJIS[i % PRESET_KAOMOJIS.length]}
+                      {PRESET_KAOMOJIS[index % PRESET_KAOMOJIS.length]}
                     </span>
-                    <span className="font-bold text-sm sm:text-base">{preset.label}</span>
-                    <span className={`text-xs ${isSelected ? "text-brand-white" : "text-gray-500"}`}>
+                    <span className="font-bold text-sm sm:text-base">
+                      {preset.label}
+                    </span>
+                    <span
+                      className={`text-xs ${
+                        isSelected ? "text-brand-white" : "text-gray-500"
+                      }`}
+                    >
                       {preset.amountVnd.toLocaleString("vi-VN")} đ
                     </span>
                   </button>
@@ -104,7 +203,6 @@ export default function CoffeeForm({
               })}
             </div>
 
-            {/* Custom Stepper */}
             <div className="flex items-center justify-between bg-white px-4 py-2.5 rounded-2xl border-2 border-gray-200 text-xs">
               <span className="font-bold text-gray-600 uppercase text-xs">
                 Custom Cups Count:
@@ -112,8 +210,9 @@ export default function CoffeeForm({
               <div className="flex items-center gap-3">
                 <button
                   type="button"
+                  aria-label="Giảm số ly cà phê"
                   onClick={() => setCupsCount(Math.max(1, cupsCount - 1))}
-                  className="w-8 h-8 rounded-xl bg-gray-100 font-black text-base text-gray-700 hover:bg-brand-yellow hover:text-brand-blue transition-colors flex items-center justify-center cursor-pointer"
+                  className="w-8 h-8 rounded-xl bg-gray-100 font-black text-base text-gray-700 hover:bg-brand-yellow hover:text-brand-blue transition-colors flex items-center justify-center cursor-pointer disabled:cursor-not-allowed"
                 >
                   -
                 </button>
@@ -122,113 +221,184 @@ export default function CoffeeForm({
                 </span>
                 <button
                   type="button"
-                  onClick={() => setCupsCount(cupsCount + 1)}
-                  className="w-8 h-8 rounded-xl bg-gray-100 font-black text-base text-gray-700 hover:bg-brand-yellow hover:text-brand-blue transition-colors flex items-center justify-center cursor-pointer"
+                  aria-label="Tăng số ly cà phê"
+                  onClick={() => setCupsCount(Math.min(MAX_CUPS, cupsCount + 1))}
+                  className="w-8 h-8 rounded-xl bg-gray-100 font-black text-base text-gray-700 hover:bg-brand-yellow hover:text-brand-blue transition-colors flex items-center justify-center cursor-pointer disabled:cursor-not-allowed"
                 >
                   +
                 </button>
               </div>
             </div>
-          </div>
+          </fieldset>
 
-          {/* Name Input */}
           <div>
-            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+            <label
+              htmlFor="supporter-name"
+              className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5"
+            >
               2. Your Name / Nickname (Optional)
             </label>
             <input
+              id="supporter-name"
               type="text"
+              maxLength={80}
+              disabled={isLocked || isCreating}
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(event) => setName(event.target.value)}
               placeholder="E.g., Alex Dev, Anonymous Friend..."
-              className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-brand-blue outline-none text-sm font-medium bg-white"
+              className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-brand-blue outline-none text-sm font-medium bg-white disabled:opacity-70"
             />
           </div>
 
-          {/* Message Input */}
           <div>
-            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+            <label
+              htmlFor="supporter-message"
+              className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5"
+            >
               3. Message / Wishes (Optional)
             </label>
             <textarea
+              id="supporter-message"
               rows={2}
+              maxLength={500}
+              disabled={isLocked || isCreating}
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={(event) => setMessage(event.target.value)}
               placeholder="Write a sweet note or thoughts..."
-              className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-brand-blue outline-none text-sm font-medium bg-white resize-none"
+              className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-brand-blue outline-none text-sm font-medium bg-white resize-none disabled:opacity-70"
             />
           </div>
         </div>
 
-        {/* Right Column: VietQR Code & Bank Info */}
-        <div className="lg:col-span-5 bg-white p-5 rounded-2xl border-2 border-brand-blue/20 flex flex-col items-center text-center">
+        <div className="lg:col-span-5 bg-white p-5 rounded-2xl border-2 border-brand-blue/20 flex flex-col items-center text-center min-h-[390px] justify-center">
           <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">
-            Scan VietQR Code To Transfer
+            {checkout ? "Scan VietQR To Transfer" : "Secure VietQR Preview"}
           </span>
           <span className="text-2xl sm:text-3xl font-black text-brand-blue mb-3">
-            {totalAmount.toLocaleString("vi-VN")} VNĐ
+            {(checkout?.amount ?? totalAmount).toLocaleString("vi-VN")} VNĐ
           </span>
 
-          <div className="bg-white p-3 rounded-2xl border border-gray-200 shadow-md mb-3">
-            <img
-              src={qrUrl}
-              alt="VietQR Code"
-              className="w-44 h-44 sm:w-52 sm:h-52 object-contain rounded-lg"
-            />
-          </div>
-
-          {/* Bank Copy Box */}
-          <div className="w-full bg-gray-50 p-3 rounded-xl text-left text-xs space-y-1.5 border border-gray-200 font-medium">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-500">Bank:</span>
-              <span className="font-bold text-gray-800">{BANK_CONFIG.bankName}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-500">Account No:</span>
-              <div className="flex items-center gap-2">
-                <span className="font-black text-brand-blue font-mono text-sm">{BANK_CONFIG.accountNo}</span>
-                <button
-                  type="button"
-                  onClick={handleCopyAccount}
-                  className="px-2 py-0.5 bg-brand-blue text-white rounded text-[10px] font-bold hover:bg-blue-600 transition-colors cursor-pointer"
-                >
-                  {copied ? "Copied!" : "Copy"}
-                </button>
+          {checkout ? (
+            <>
+              <div className="bg-white p-3 rounded-2xl border border-gray-200 shadow-md mb-3">
+                {/* The bank-generated QR must be fetched fresh and must not pass through image optimization caches. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={checkout.qrUrl}
+                  alt={`VietQR ${checkout.paymentCode}`}
+                  className="w-44 h-44 sm:w-52 sm:h-52 object-contain rounded-lg"
+                />
               </div>
-            </div>
-            <div className="flex justify-between items-center pt-1.5 border-t border-gray-200">
-              <span className="text-gray-500">Transfer Memo:</span>
-              <span className="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded font-mono truncate max-w-[140px]">
-                {memo}
+              <div className="w-full bg-gray-50 p-3 rounded-xl text-left text-xs space-y-2 border border-gray-200 font-medium">
+                <div className="flex justify-between items-center gap-2">
+                  <span className="text-gray-500">Bank:</span>
+                  <span className="font-bold text-gray-800">{checkout.bank.code}</span>
+                </div>
+                <div className="flex justify-between items-center gap-2">
+                  <span className="text-gray-500">Account:</span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      void copyText(checkout.bank.accountNumber, "account")
+                    }
+                    className="font-black text-brand-blue font-mono text-sm cursor-pointer"
+                  >
+                    {checkout.bank.accountNumber} · {copiedField === "account" ? "Copied" : "Copy"}
+                  </button>
+                </div>
+                <div className="flex justify-between items-center gap-2 pt-2 border-t border-gray-200">
+                  <span className="text-gray-500">Transfer memo:</span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      void copyText(checkout.paymentCode, "paymentCode")
+                    }
+                    className="font-black text-amber-700 bg-amber-50 px-2 py-1 rounded font-mono cursor-pointer"
+                  >
+                    {checkout.paymentCode} · {copiedField === "paymentCode" ? "Copied" : "Copy"}
+                  </button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="w-52 h-52 rounded-2xl border-2 border-dashed border-brand-blue/20 bg-brand-blue/5 flex flex-col items-center justify-center px-6 text-brand-blue">
+              <span className="text-4xl mb-3">☕</span>
+              <span className="font-black text-sm uppercase">Create your QR</span>
+              <span className="text-xs mt-2 text-gray-500">
+                Mã chuyển khoản riêng được tạo ở bước tiếp theo.
               </span>
             </div>
-          </div>
+          )}
         </div>
-
       </div>
 
-      {/* ===== ACTION BUTTON ===== */}
-      <button
-        type="button"
-        onClick={handleConfirmSent}
-        className="w-full py-4 rounded-2xl bg-brand-blue text-brand-yellow font-black text-sm uppercase tracking-wider hover:bg-blue-600 active:scale-[0.99] transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer"
-      >
-        <span>CONFIRM COFFEE SENT (づ｡◕‿‿◕｡)づ</span>
-      </button>
+      {checkout?.status === "paid" ? (
+        <button
+          type="button"
+          onClick={resetCheckout}
+          className="w-full py-4 rounded-2xl bg-emerald-600 text-white font-black text-sm uppercase tracking-wider hover:bg-emerald-700 transition-all shadow-xl cursor-pointer"
+        >
+          PAYMENT VERIFIED · SEND ANOTHER COFFEE
+        </button>
+      ) : isExpired ? (
+        <button
+          type="button"
+          onClick={resetCheckout}
+          className="w-full py-4 rounded-2xl bg-gray-700 text-white font-black text-sm uppercase tracking-wider hover:bg-gray-800 transition-all shadow-xl cursor-pointer"
+        >
+          QR EXPIRED · CREATE A NEW ONE
+        </button>
+      ) : (
+        <button
+          type="submit"
+          disabled={isCreating || isLocked}
+          className="w-full py-4 rounded-2xl bg-brand-blue text-brand-yellow font-black text-sm uppercase tracking-wider hover:bg-blue-600 active:scale-[0.99] transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer disabled:cursor-wait disabled:opacity-80"
+        >
+          {isCreating
+            ? "CREATING SECURE VIETQR..."
+            : checkout?.status === "amount_mismatch"
+              ? "TRANSFER AMOUNT DOES NOT MATCH"
+              : checkout
+                ? "WAITING FOR SEPAY VERIFICATION..."
+                : "CREATE SECURE VIETQR (づ｡◕‿‿◕｡)づ"}
+        </button>
+      )}
 
-      {/* Success Notification Toast */}
       <AnimatePresence>
-        {submitted && (
+        {error ? (
           <motion.div
             initial={{ y: 15, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 15, opacity: 0 }}
-            className="mt-4 p-4 rounded-2xl bg-emerald-500 text-white font-bold text-xs sm:text-sm text-center shadow-lg flex items-center justify-center gap-2"
+            role="alert"
+            className="mt-4 p-4 rounded-2xl bg-red-600 text-white font-bold text-xs sm:text-sm text-center shadow-lg"
           >
-            <span>(ﾉ◕ヮ◕)ﾉ*:・ﾟ✧ Thank you so much! Message posted on Wall of Appreciation!</span>
+            {error}
           </motion.div>
-        )}
+        ) : null}
+        {checkout?.status === "amount_mismatch" ? (
+          <motion.div
+            initial={{ y: 15, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 15, opacity: 0 }}
+            role="status"
+            className="mt-4 p-4 rounded-2xl bg-amber-500 text-white font-bold text-xs sm:text-sm text-center shadow-lg"
+          >
+            SePay đã nhận giao dịch nhưng số tiền chưa khớp. Vui lòng chuyển đúng số tiền hiển thị với cùng nội dung.
+          </motion.div>
+        ) : null}
+        {checkout?.status === "paid" ? (
+          <motion.div
+            initial={{ y: 15, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 15, opacity: 0 }}
+            role="status"
+            className="mt-4 p-4 rounded-2xl bg-emerald-500 text-white font-bold text-xs sm:text-sm text-center shadow-lg"
+          >
+            (ﾉ◕ヮ◕)ﾉ*:・ﾟ✧ Cảm ơn bạn! SePay đã xác nhận và lời nhắn đã được đăng.
+          </motion.div>
+        ) : null}
       </AnimatePresence>
-    </div>
+    </form>
   );
 }

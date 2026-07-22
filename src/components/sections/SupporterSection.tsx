@@ -1,27 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import SupporterWall from "@/components/coffee/SupporterWall";
 import BottomBar from "@/components/ui/BottomBar";
-import { INITIAL_SUPPORTERS, SupporterMessage } from "@/data/coffeeConfig";
+import { useSupporters } from "@/hooks/useSupporters";
 
 export default function SupporterSection() {
-  const [supporters, setSupporters] = useState<SupporterMessage[]>([]);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("portfolio_coffee_supporters");
-    if (saved) {
-      try {
-        setSupporters(JSON.parse(saved));
-      } catch {
-        setSupporters(INITIAL_SUPPORTERS);
-      }
-    } else {
-      setSupporters(INITIAL_SUPPORTERS);
-    }
-  }, []);
+  const { supporters } = useSupporters();
 
   return (
     <section className="relative w-full min-h-screen bg-brand-blue flex flex-col items-center justify-center overflow-hidden pt-20 pb-[42px]">
