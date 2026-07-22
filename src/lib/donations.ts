@@ -9,7 +9,10 @@ import {
   createPaymentCode,
   type DonationInput,
 } from "@/lib/donation";
-import type { SePayWebhook } from "@/lib/sepay";
+import {
+  extractSePayPaymentCode,
+  type SePayWebhook,
+} from "@/lib/sepay";
 import type {
   DonationStatusResponse,
   SupporterMessage,
@@ -138,11 +141,12 @@ export type ProcessSePayOutcome =
 export async function processSePayTransaction(
   payload: SePayWebhook,
 ): Promise<ProcessSePayOutcome> {
+  const paymentCode = extractSePayPaymentCode(payload);
   const result = await getDatabase().execute<{ outcome: ProcessSePayOutcome }>(sql`
     WITH candidate AS (
       SELECT id, amount, status
       FROM ${donations}
-      WHERE payment_code = ${payload.code}
+      WHERE payment_code = ${paymentCode}
       LIMIT 1
     ), inserted AS (
       INSERT INTO sepay_transactions (
@@ -162,7 +166,7 @@ export async function processSePayTransaction(
         ${payload.referenceCode},
         ${payload.gateway},
         ${payload.accountNumber},
-        ${payload.code},
+        ${paymentCode},
         ${payload.content},
         ${payload.transferAmount},
         ${payload.transactionDate},

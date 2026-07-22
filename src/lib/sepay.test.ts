@@ -74,6 +74,25 @@ describe("SePay payment matching", () => {
     ).toBe("match");
   });
 
+  it("matches the payment code embedded in content when SePay code is null", () => {
+    const parsed = parseSePayWebhook(
+      JSON.stringify({
+        ...payload,
+        code: null,
+        content:
+          "138780548230-CF00000042-CHUYEN TIEN-OQCH000GD8vj-MOMO",
+      }),
+    );
+
+    expect(
+      assessSePayTransaction(parsed, {
+        accountNumber: "0703586224",
+        paymentCode: "CF00000042",
+        amount: 90_000,
+      }),
+    ).toBe("match");
+  });
+
   it("does not confirm a transfer with the wrong amount", () => {
     const parsed = parseSePayWebhook(
       JSON.stringify({ ...payload, transferAmount: 30_000 }),

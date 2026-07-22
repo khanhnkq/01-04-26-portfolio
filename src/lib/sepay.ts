@@ -71,6 +71,19 @@ export function parseSePayWebhook(rawBody: string): SePayWebhook {
   return sePayWebhookSchema.parse(JSON.parse(rawBody));
 }
 
+const PAYMENT_CODE_PATTERN = /\bCF\d{8}\b/i;
+
+export function extractSePayPaymentCode(
+  payload: Pick<SePayWebhook, "code" | "content">,
+): string | null {
+  const directCode = payload.code?.trim();
+  if (directCode && PAYMENT_CODE_PATTERN.test(directCode)) {
+    return directCode.match(PAYMENT_CODE_PATTERN)?.[0].toUpperCase() ?? null;
+  }
+
+  return payload.content.match(PAYMENT_CODE_PATTERN)?.[0].toUpperCase() ?? null;
+}
+
 interface ExpectedDonation {
   accountNumber: string;
   paymentCode: string;
@@ -96,7 +109,7 @@ export function assessSePayTransaction(
     return "wrong_account";
   }
 
-  if (payload.code !== expected.paymentCode) {
+  if (extractSePayPaymentCode(payload) !== expected.paymentCode) {
     return "unmatched_code";
   }
 
