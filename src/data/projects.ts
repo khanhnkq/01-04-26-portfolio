@@ -71,5 +71,17 @@ export const PROJECTS: ProjectType[] = [
     image: "/wonderkids-preview-3d.png",
     page_cover: "/wonderkids-preview.png",
     back_page_cover: "/back_page_cover_6.png",
+  },
+  {
+    id: 6,
+    title: "DocCleaner",
+    category: "CHROME EXTENSION",
+    description: "A smart Chrome Extension that automatically removes 100% of ads, bypasses paywall/blur locks on Studocu & Scribd, and exports HD A4 PDFs in 1-Click.",
+    tags: ["JavaScript", "Chrome Extension", "Manifest V3", "DOM Manipulation", "CSS Injection"],
+    demo: "https://github.com/khanhnkq/DocCleaner",
+    color: "bg-brand-yellow",
+    image: "/doccleaner-preview-3d.png",
+    page_cover: "/doccleaner-preview.png",
+    back_page_cover: "/back_page_cover_1.png",
   }
 ];
