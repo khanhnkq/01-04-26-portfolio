@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import {
   COFFEE_PRESETS,
@@ -22,6 +22,8 @@ interface CoffeeFormProps {
 type CopyField = "account" | "paymentCode" | null;
 
 const PRESET_KAOMOJIS = ["(^ ᴗ ^)", "(♡ ‿ ♡)", "(づ｡◕‿‿◕｡)づ"];
+const ACTION_BUTTON_CLASS =
+  "w-full min-h-14 px-5 py-4 rounded-2xl font-black text-xs sm:text-sm uppercase tracking-wider transition-[transform,background-color,box-shadow,opacity] shadow-xl flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98] motion-reduce:transform-none motion-reduce:transition-none";
 
 export default function CoffeeForm({
   cupsCount,
@@ -35,12 +37,28 @@ export default function CoffeeForm({
   const [isExpired, setIsExpired] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<CopyField>(null);
+  const [isPaidToastVisible, setIsPaidToastVisible] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   const totalAmount = cupsCount * COFFEE_PRICE_VND;
   const isLocked = Boolean(checkout && checkout.status !== "paid" && !isExpired);
   const checkoutId = checkout?.id;
   const checkoutStatus = checkout?.status;
   const checkoutExpiresAt = checkout?.expiresAt;
+
+  useEffect(() => {
+    if (checkoutStatus !== "paid") {
+      return;
+    }
+
+    setIsPaidToastVisible(true);
+    const timeoutId = window.setTimeout(
+      () => setIsPaidToastVisible(false),
+      6_000,
+    );
+
+    return () => window.clearTimeout(timeoutId);
+  }, [checkoutStatus]);
 
   useEffect(() => {
     if (!checkoutId || !checkoutExpiresAt || checkoutStatus === "paid" || isExpired) {
@@ -143,6 +161,7 @@ export default function CoffeeForm({
   const resetCheckout = () => {
     setCheckout(null);
     setIsExpired(false);
+    setIsPaidToastVisible(false);
     setError(null);
     setName("");
     setMessage("");
@@ -150,10 +169,11 @@ export default function CoffeeForm({
   };
 
   return (
-    <form
-      onSubmit={createCheckout}
-      className="w-full bg-paper text-gray-900 rounded-3xl p-6 sm:p-8 md:p-10 border-4 border-brand-yellow relative overflow-hidden"
-    >
+    <>
+      <form
+        onSubmit={createCheckout}
+        className="w-full bg-paper text-gray-900 rounded-3xl p-6 sm:p-8 md:p-10 border-4 border-brand-yellow relative overflow-hidden"
+      >
       <div className="absolute top-0 right-0 bg-brand-yellow text-brand-blue font-black px-6 py-2 rounded-bl-2xl text-xs uppercase tracking-widest flex items-center gap-2 shadow-sm">
         <span>(♡ ‿ ♡)</span> SePay Verified
       </div>
@@ -336,15 +356,15 @@ export default function CoffeeForm({
         <button
           type="button"
           onClick={resetCheckout}
-          className="w-full py-4 rounded-2xl bg-emerald-600 text-white font-black text-sm uppercase tracking-wider hover:bg-emerald-700 transition-all shadow-xl cursor-pointer"
+          className={`${ACTION_BUTTON_CLASS} bg-brand-blue text-brand-yellow hover:bg-blue-600`}
         >
-          PAYMENT VERIFIED · SEND ANOTHER COFFEE
+          GỬI THÊM MỘT LY CÀ PHÊ
         </button>
       ) : isExpired ? (
         <button
           type="button"
           onClick={resetCheckout}
-          className="w-full py-4 rounded-2xl bg-gray-700 text-white font-black text-sm uppercase tracking-wider hover:bg-gray-800 transition-all shadow-xl cursor-pointer"
+          className={`${ACTION_BUTTON_CLASS} bg-gray-700 text-white hover:bg-gray-800`}
         >
           QR EXPIRED · CREATE A NEW ONE
         </button>
@@ -352,7 +372,7 @@ export default function CoffeeForm({
         <button
           type="submit"
           disabled={isCreating || isLocked}
-          className="w-full py-4 rounded-2xl bg-brand-blue text-brand-yellow font-black text-sm uppercase tracking-wider hover:bg-blue-600 active:scale-[0.99] transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer disabled:cursor-wait disabled:opacity-80"
+          className={`${ACTION_BUTTON_CLASS} bg-brand-blue text-brand-yellow hover:bg-blue-600 disabled:cursor-wait disabled:opacity-80`}
         >
           {isCreating
             ? "CREATING SECURE VIETQR..."
@@ -387,18 +407,49 @@ export default function CoffeeForm({
             SePay đã nhận giao dịch nhưng số tiền chưa khớp. Vui lòng chuyển đúng số tiền hiển thị với cùng nội dung.
           </motion.div>
         ) : null}
-        {checkout?.status === "paid" ? (
+      </AnimatePresence>
+      </form>
+
+      <AnimatePresence>
+        {isPaidToastVisible ? (
           <motion.div
-            initial={{ y: 15, opacity: 0 }}
+            initial={
+              shouldReduceMotion ? { opacity: 0 } : { y: 20, opacity: 0 }
+            }
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 15, opacity: 0 }}
+            exit={
+              shouldReduceMotion ? { opacity: 0 } : { y: 12, opacity: 0 }
+            }
             role="status"
-            className="mt-4 p-4 rounded-2xl bg-emerald-500 text-white font-bold text-xs sm:text-sm text-center shadow-lg"
+            aria-live="polite"
+            aria-atomic="true"
+            className="fixed inset-x-4 bottom-4 z-[100] flex items-start gap-3 rounded-2xl border-2 border-brand-yellow bg-brand-blue p-4 text-brand-white shadow-[0_18px_50px_rgba(10,44,110,0.28)] sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-[390px]"
           >
-            (ﾉ◕ヮ◕)ﾉ*:・ﾟ✧ Cảm ơn bạn! SePay đã xác nhận và lời nhắn đã được đăng.
+            <div
+              aria-hidden="true"
+              className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-yellow text-lg font-black text-brand-blue"
+            >
+              ✓
+            </div>
+            <div className="min-w-0 flex-1 pt-0.5">
+              <p className="text-sm font-black uppercase tracking-wide text-brand-yellow">
+                Thanh toán đã xác nhận
+              </p>
+              <p className="mt-1 text-xs font-semibold leading-relaxed text-white/85 sm:text-sm">
+                Cảm ơn bạn! Lời nhắn đã được đăng lên danh sách supporters.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsPaidToastVisible(false)}
+              aria-label="Đóng thông báo"
+              className="flex size-10 shrink-0 items-center justify-center rounded-xl text-xl leading-none text-white/70 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-yellow"
+            >
+              ×
+            </button>
           </motion.div>
         ) : null}
       </AnimatePresence>
-    </form>
+    </>
   );
 }
