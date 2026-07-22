@@ -65,7 +65,7 @@ export default function BuyMeACoffeePage() {
 
       {/* ===== SUPPORTER CAROUSEL WITH HEADER & SPACING ===== */}
       <div className="w-full z-20 my-10">
-        <SupporterWall supporters={supporters} showHeader={true} />
+        <SupporterWall supporters={supporters} showHeader={true} rows={2} />
       </div>
 
       {/* Shared Bottom Bar */}

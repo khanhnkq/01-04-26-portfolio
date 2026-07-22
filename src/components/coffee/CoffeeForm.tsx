@@ -375,36 +375,39 @@ export default function CoffeeForm({
         {isPaidToastVisible ? (
           <motion.div
             initial={
-              shouldReduceMotion ? { opacity: 0 } : { y: 20, opacity: 0 }
+              shouldReduceMotion ? { opacity: 0 } : { y: -20, opacity: 0 }
             }
             animate={{ y: 0, opacity: 1 }}
             exit={
-              shouldReduceMotion ? { opacity: 0 } : { y: 12, opacity: 0 }
+              shouldReduceMotion ? { opacity: 0 } : { y: -12, opacity: 0 }
             }
             role="status"
             aria-live="polite"
             aria-atomic="true"
-            className="fixed inset-x-4 bottom-4 z-[100] flex items-start gap-3 rounded-2xl border-2 border-brand-yellow bg-brand-blue p-4 text-brand-white shadow-[0_18px_50px_rgba(10,44,110,0.28)] sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-[390px]"
+            className="fixed top-4 right-4 sm:top-6 sm:right-6 z-[100] flex items-start gap-3 rounded-2xl border-2 border-brand-yellow bg-brand-blue p-4 text-brand-white shadow-[0_18px_50px_rgba(10,44,110,0.35)] w-[calc(100%-32px)] sm:w-[400px]"
           >
             <div
               aria-hidden="true"
-              className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-yellow text-lg font-black text-brand-blue"
+              className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-yellow text-lg font-black text-brand-blue shadow-sm"
             >
               ✓
             </div>
             <div className="min-w-0 flex-1 pt-0.5">
               <p className="text-sm font-black uppercase tracking-wide text-brand-yellow">
-                Coffee received
+                Payment Successful!
               </p>
-              <p className="mt-1 text-xs font-semibold leading-relaxed text-white/85 sm:text-sm">
-                Thank you. Your coffee and your note just made my day.
+              <p className="mt-1 text-xs font-semibold leading-relaxed text-white/90 sm:text-sm">
+                Thank you! Your coffee and support just made my day.
+              </p>
+              <p className="mt-1 text-[11px] font-mono font-medium text-brand-yellow/80 italic leading-snug">
+                (Thanh toán thành công! Cảm ơn bạn rất nhiều vì ly cà phê này!)
               </p>
             </div>
             <button
               type="button"
               onClick={() => setIsPaidToastVisible(false)}
               aria-label="Close message"
-              className="flex size-10 shrink-0 items-center justify-center rounded-xl text-xl leading-none text-white/70 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-yellow"
+              className="flex size-10 shrink-0 items-center justify-center rounded-xl text-xl leading-none text-white/70 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-yellow cursor-pointer"
             >
               ×
             </button>

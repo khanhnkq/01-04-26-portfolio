@@ -102,7 +102,7 @@ export default function SupporterSection() {
         
         {/* Supporter Cards Single Row Marquee — Full screen width edge to edge */}
         <div className="w-full">
-          <SupporterWall supporters={supporters} showHeader={false} />
+          <SupporterWall supporters={supporters} showHeader={false} rows={1} />
         </div>
 
         {/* CTA Button to Buy Me a Coffee Page */}
