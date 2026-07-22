@@ -19,40 +19,6 @@ const sePayWebhookSchema = z.object({
 
 export type SePayWebhook = z.infer<typeof sePayWebhookSchema>;
 
-const sePayApiTransactionSchema = z.object({
-  id: z.string().min(1),
-  transaction_date: z.string().min(1),
-  account_number: z.string().min(1),
-  transfer_type: z.enum(["in", "out"]),
-  amount_in: z.number().int().nonnegative(),
-  accumulated: z.number().optional(),
-  transaction_content: z.string().default(""),
-  reference_number: z.string().min(1),
-  code: z.string().nullable().optional(),
-  bank_brand_name: z.string().min(1),
-});
-
-export type SePayApiTransaction = z.infer<typeof sePayApiTransactionSchema>;
-
-export function normalizeSePayApiTransaction(
-  input: unknown,
-): SePayWebhook {
-  const transaction = sePayApiTransactionSchema.parse(input);
-  return sePayWebhookSchema.parse({
-    id: transaction.id,
-    gateway: transaction.bank_brand_name,
-    transactionDate: transaction.transaction_date,
-    accountNumber: transaction.account_number,
-    subAccount: null,
-    code: transaction.code,
-    content: transaction.transaction_content,
-    transferType: transaction.transfer_type,
-    transferAmount: transaction.amount_in,
-    accumulated: transaction.accumulated,
-    referenceCode: transaction.reference_number,
-  });
-}
-
 interface SignatureVerificationInput {
   rawBody: string;
   signature: string | null;

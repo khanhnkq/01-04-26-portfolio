@@ -20,9 +20,6 @@ Create a pooled connection string in Neon and set the following server-side vari
 ```dotenv
 DATABASE_URL=postgresql://...
 SEPAY_WEBHOOK_SECRET=...
-SEPAY_API_TOKEN=...
-SEPAY_API_BASE_URL=https://userapi.sepay.vn/v2
-CRON_SECRET=...
 DONATE_BANK_CODE=MBBank
 DONATE_ACCOUNT_NO=...
 DONATE_ACCOUNT_NAME=...
@@ -54,12 +51,6 @@ The initial migration creates:
 
 - `donations`: pending/paid state and public supporter messages.
 - `sepay_transactions`: immutable transaction matching/audit records.
-
-## Reconciliation
-
-`vercel.json` schedules `/api/cron/reconcile-sepay` daily. Vercel sends `Authorization: Bearer $CRON_SECRET`; the endpoint queries the last 48 hours from SePay API v2 and reuses the same idempotent database processor as the webhook.
-
-For non-Vercel deployments, call the endpoint from another scheduler with the same authorization header.
 
 ## Verification
 

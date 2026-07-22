@@ -16,7 +16,7 @@ Biến trang `/buy-me-a-coffee` từ bản mô phỏng dùng `localStorage` thà
 - [x] 4. Tạo `POST src/app/api/webhooks/sepay/route.ts` và endpoint kiểm tra trạng thái: đọc raw body để xác minh HMAC-SHA256 trước khi parse, chỉ nhận `transferType=in`, đối chiếu account + `code` + `transferAmount`, rồi dùng một câu SQL atomic/transaction Neon để `INSERT ... ON CONFLICT` transaction và đổi đơn sang `paid`; trả `200 {"success":true}` và idempotent theo `id` → Unit test HMAC, sai tiền và normalization đã pass; còn test payload thật từ SePay dashboard.
 - [x] 5. Refactor `src/components/coffee/CoffeeForm.tsx` và `src/app/buy-me-a-coffee/page.tsx` thành state machine `idle → creating → pending → paid/error/expired`: render VietQR + mã chuyển khoản, copy tài khoản/nội dung, polling mỗi 3 giây, disable submit lặp, dừng sau thời hạn và cảm ơn chỉ khi server báo `paid` → Không còn ghi supporter vào `localStorage`.
 - [x] 6. Thay `INITIAL_SUPPORTERS` và `portfolio_coffee_supporters` trong `src/data/coffeeConfig.ts`, `src/components/sections/SupporterSection.tsx` bằng danh sách `paid AND is_visible` từ data layer/API → Homepage và trang donate dùng chung API supporter.
-- [x] 7. Hoàn thiện an toàn/vận hành: escape và giới hạn nội dung, cap số ly, rate-limit tạo đơn, so sánh HMAC constant-time, log theo `payment_code`/`sepay_id` không chứa secret, thêm job đối soát SePay API cho giao dịch webhook bị bỏ lỡ, tài liệu setup/rollback trong `README.md` → Cron đối soát và cấu hình Vercel đã được thêm.
+- [x] 7. Hoàn thiện an toàn/vận hành: escape và giới hạn nội dung, cap số ly, rate-limit tạo đơn, so sánh HMAC constant-time, log theo `payment_code`/`sepay_id` không chứa secret và tài liệu setup trong `README.md`.
 - [ ] 8. Xác minh cuối: thêm unit test cho validation/tính tiền/HMAC/idempotency, integration test route bằng payload SePay fixture, E2E cho success/sai tiền/timeout/refresh; chạy `npm run lint`, `npm run build`, toàn bộ test, mô phỏng giao dịch trong SePay Test mode rồi mới chuyển thật số tiền nhỏ → Kiểm tra: mọi lệnh pass, webhook nhận 200 và supporter chỉ xuất hiện sau giao dịch đúng mã + đúng tiền.
 
 ## Hoàn tất khi
@@ -29,7 +29,7 @@ Biến trang `/buy-me-a-coffee` từ bản mô phỏng dùng `localStorage` thà
 ## Ghi chú
 
 - Không dùng nút “đã chuyển khoản” làm bằng chứng; chỉ webhook SePay có HMAC hợp lệ, đúng tài khoản, đúng mã và đúng tiền mới đổi đơn sang `paid`.
-- SePay có thể gửi cùng giao dịch nhiều lần, vì vậy `sepay_transactions.sepay_id UNIQUE` là lớp chống trùng bắt buộc; job đối soát phải dùng cùng logic idempotent.
+- SePay có thể gửi cùng giao dịch nhiều lần, vì vậy `sepay_transactions.sepay_id UNIQUE` là lớp chống trùng bắt buộc.
 - Test theo thứ tự: fixture cục bộ → SePay Test mode → giao dịch thật giá trị nhỏ trên HTTPS production.
 - Neon project đã được tạo; khi triển khai chỉ còn lấy pooled connection string và khai báo `DATABASE_URL` ở local/Vercel. Mọi truy vấn database đi qua server Route Handler, không kết nối Neon trực tiếp từ browser.
 - Tài liệu tham chiếu: [SePay Webhook](https://docs.sepay.vn/tich-hop-webhooks.html), [SePay Test mode](https://developer.sepay.vn/vi/sepay-webhooks/test-mode/bat-dau-nhan), [Neon serverless driver](https://neon.com/docs/serverless/serverless-driver), [Drizzle với Neon](https://orm.drizzle.team/docs/get-started/neon-new), và tài liệu Next.js 16 tại `node_modules/next/dist/docs/01-app/01-getting-started/15-route-handlers.md`.

@@ -4,7 +4,6 @@ import { describe, expect, it } from "vitest";
 
 import {
   assessSePayTransaction,
-  normalizeSePayApiTransaction,
   parseSePayWebhook,
   verifySePaySignature,
 } from "./sepay";
@@ -57,23 +56,6 @@ describe("SePay webhook security", () => {
 });
 
 describe("SePay payment matching", () => {
-  it("normalizes a SePay API v2 transaction for reconciliation", () => {
-    expect(
-      normalizeSePayApiTransaction({
-        id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-        transaction_date: "2026-07-22 10:30:00",
-        account_number: "0703586224",
-        transfer_type: "in",
-        amount_in: 90_000,
-        accumulated: 1_000_000,
-        transaction_content: "CF00000042",
-        reference_number: "FT260722123456",
-        code: "CF00000042",
-        bank_brand_name: "MBBank",
-      }).transferAmount,
-    ).toBe(90_000);
-  });
-
   it("matches an incoming transaction by account, code and amount", () => {
     const parsed = parseSePayWebhook(JSON.stringify(payload));
 
