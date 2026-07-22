@@ -1,19 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import BottomBar from "@/components/ui/BottomBar";
-import { StarDoodle, HeartDoodle, SparkleDoodle, CrownDoodle, SwirlDoodle, FlowerDoodle } from "@/components/ui/Doodles";
 
 import { PROJECTS } from "@/data/projects";
 import { useAtom } from 'jotai';
 import { pageAtom } from '@/store/bookStore';
 
+const FOLDER_LAYER_COUNT = 5;
+
 export default function HeroSection() {
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
+  const [isFolderReady, setIsFolderReady] = useState(false);
   const [poppingCat, setPoppingCat] = useState<number | null>(null);
+  const readyFolderLayersRef = useRef(new Set<string>());
   const [, setPage] = useAtom(pageAtom);
+
+  const markFolderLayerReady = useCallback((layer: string) => {
+    const readyLayers = readyFolderLayersRef.current;
+    if (readyLayers.has(layer)) {
+      return;
+    }
+
+    readyLayers.add(layer);
+    if (readyLayers.size === FOLDER_LAYER_COUNT) {
+      setIsFolderReady(true);
+    }
+  }, []);
 
   return (
     <section className="relative w-full min-h-screen bg-brand-blue flex flex-col items-center justify-end overflow-hidden pt-20 pb-[42px]">
@@ -133,30 +148,36 @@ export default function HeroSection() {
       </motion.div>
 
       {/* Tilted Folder Graphic Pushed To Bottom */}
-      <motion.div 
-        className="relative w-[90%] max-w-[820px] aspect-[4/3] flex flex-col items-center justify-center z-10 origin-bottom"
-        initial={{ opacity: 0, y: 300, rotate: -20, scale: 0.5 }}
-        animate={
-          isProjectsOpen 
-            ? { opacity: 1, y: 100, rotate: -10, scale: 0.9 }
-            : { opacity: 1, y: 0, rotate: 0, scale: 1 }
-        }
-        transition={{ type: "spring", stiffness: 120, damping: 15, delay: isProjectsOpen ? 0 : 0.2 }}
+      <div
+        className={`relative w-[90%] max-w-[820px] aspect-[4/3] flex flex-col items-center justify-center z-10 origin-bottom ${
+          isFolderReady ? "hero-folder-enter" : "opacity-0"
+        }`}
       >
         <motion.div
-          className="relative w-full h-full cursor-pointer origin-bottom"
-          initial="idle"
-          whileHover={!isProjectsOpen ? "hover" : "idle"}
-          whileTap={!isProjectsOpen ? "tap" : "idle"}
-          animate={isProjectsOpen ? "open" : "idle"}
-          onClick={() => setIsProjectsOpen(!isProjectsOpen)}
-          variants={{
-            idle: { scale: 1 },
-            hover: { scale: 1.05, transition: { type: "spring", stiffness: 400, damping: 25 } },
-            tap: { scale: 0.95, transition: { type: "spring", stiffness: 400, damping: 25 } },
-            open: { scale: 1 } 
-          }}
+          className="relative w-full h-full origin-bottom"
+          initial={false}
+          animate={
+            isProjectsOpen
+              ? { y: 100, rotate: -10, scale: 0.9 }
+              : { y: 0, rotate: 0, scale: 1 }
+          }
+          transition={{ type: "spring", stiffness: 180, damping: 24, mass: 0.7 }}
+          style={{ willChange: "transform" }}
         >
+          <motion.div
+            className="relative w-full h-full cursor-pointer origin-bottom"
+            initial="idle"
+            whileHover={!isProjectsOpen ? "hover" : "idle"}
+            whileTap={!isProjectsOpen ? "tap" : "idle"}
+            animate={isProjectsOpen ? "open" : "idle"}
+            onClick={() => setIsProjectsOpen(!isProjectsOpen)}
+            variants={{
+              idle: { scale: 1 },
+              hover: { scale: 1.05, transition: { type: "spring", stiffness: 400, damping: 25 } },
+              tap: { scale: 0.95, transition: { type: "spring", stiffness: 400, damping: 25 } },
+              open: { scale: 1 }
+            }}
+          >
           {/* LỚP 1: MẶT SAU FOLDER */}
           <div className="absolute inset-0 z-0">
             <Image 
@@ -165,6 +186,8 @@ export default function HeroSection() {
               fill
               className="object-contain object-bottom pointer-events-none"
               priority
+              onLoad={() => markFolderLayerReady("back")}
+              onError={() => markFolderLayerReady("back")}
             />
           </div>
 
@@ -186,6 +209,8 @@ export default function HeroSection() {
               fill
               className="object-contain object-bottom pointer-events-none"
               priority
+              onLoad={() => markFolderLayerReady("paper-1")}
+              onError={() => markFolderLayerReady("paper-1")}
             />
           </motion.div>
 
@@ -207,6 +232,8 @@ export default function HeroSection() {
               fill
               className="object-contain object-bottom pointer-events-none"
               priority
+              onLoad={() => markFolderLayerReady("paper-2")}
+              onError={() => markFolderLayerReady("paper-2")}
             />
           </motion.div>
 
@@ -228,6 +255,8 @@ export default function HeroSection() {
               fill
               className="object-contain object-bottom pointer-events-none"
               priority
+              onLoad={() => markFolderLayerReady("paper-3")}
+              onError={() => markFolderLayerReady("paper-3")}
             />
           </motion.div>
 
@@ -239,10 +268,13 @@ export default function HeroSection() {
               fill
               className="object-contain object-bottom pointer-events-none"
               priority
+              onLoad={() => markFolderLayerReady("front")}
+              onError={() => markFolderLayerReady("front")}
             />
           </div>
+          </motion.div>
         </motion.div>
-      </motion.div>
+      </div>
 
       {/* BACKDROP BLUR */}
       <AnimatePresence>

@@ -2,6 +2,7 @@ import HeroSection from "@/components/sections/HeroSection";
 import AboutSection from "@/components/sections/AboutSection";
 import ProjectSection from "@/components/sections/ProjectSection";
 import SupporterSection from "@/components/sections/SupporterSection";
+import ContactSection from "@/components/sections/ContactSection";
 import ThankYouSection from "@/components/sections/ThankYouSection";
 import BookSectionDynamic from "@/components/sections/BookSectionDynamic";
 import { PROJECTS } from "@/data/projects";
@@ -22,6 +23,8 @@ export default function Home() {
 
       {/* Wall of Appreciation / Supporters Wall Section */}
       <SupporterSection />
+
+      <ContactSection />
 
       <ThankYouSection />
     </main>

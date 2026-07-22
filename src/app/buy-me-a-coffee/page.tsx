@@ -1,11 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import CoffeeForm from "@/components/coffee/CoffeeForm";
 import SupporterWall from "@/components/coffee/SupporterWall";
 import BottomBar from "@/components/ui/BottomBar";
 import { useSupporters } from "@/hooks/useSupporters";
+
+const CoffeeCupBackground = dynamic(
+  () => import("@/components/coffee/CoffeeCupBackground"),
+  { ssr: false },
+);
 
 export default function BuyMeACoffeePage() {
   const [cupsCount, setCupsCount] = useState<number>(3);
@@ -39,12 +45,15 @@ export default function BuyMeACoffeePage() {
       <div className="absolute top-4 left-4 md:top-8 md:left-8 w-12 h-12 md:w-20 md:h-20 border-t-2 border-l-2 border-brand-yellow/10 pointer-events-none z-0" />
       <div className="absolute bottom-14 right-4 md:bottom-16 md:right-8 w-12 h-12 md:w-20 md:h-20 border-b-2 border-r-2 border-brand-yellow/10 pointer-events-none z-0" />
 
+      <CoffeeCupBackground />
+
       {/* ===== HEADER NAVIGATION & TITLE ===== */}
       <div className="w-full max-w-7xl mx-auto px-6 pt-3 pb-1 z-30 relative flex flex-col items-center">
         {/* Navigation Row */}
         <div className="w-full flex items-center justify-between mb-1">
           <Link
             href="/"
+            transitionTypes={["coffee-back"]}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-yellow text-brand-blue font-black text-[11px] uppercase tracking-wider hover:bg-white hover:scale-105 transition-all shadow-md cursor-pointer"
           >
             <span>←</span> BACK TO PORTFOLIO

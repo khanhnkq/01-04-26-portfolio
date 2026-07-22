@@ -7,6 +7,7 @@ interface SupporterWallProps {
   supporters: SupporterMessage[];
   showHeader?: boolean;
   rows?: number;
+  tone?: "blue" | "paper";
 }
 
 function getLoopTrack(items: SupporterMessage[], minCount = 8): SupporterMessage[] {
@@ -96,14 +97,21 @@ function SupporterCard({ item, index }: { item: SupporterMessage; index: number 
   );
 }
 
-export default function SupporterWall({ supporters, showHeader = true, rows = 2 }: SupporterWallProps) {
+export default function SupporterWall({
+  supporters,
+  showHeader = true,
+  rows = 2,
+  tone = "blue",
+}: SupporterWallProps) {
+  const usesPaperTone = tone === "paper";
+
   if (supporters.length === 0) {
     return (
-      <div className="w-full max-w-4xl mx-auto p-6 text-center bg-brand-blue/30 rounded-3xl border-2 border-dashed border-brand-yellow/30 text-brand-white my-4">
-        <p className="font-script text-xl text-brand-yellow mb-1">
+      <div className={`mx-auto my-4 w-full max-w-4xl rounded-3xl border-2 border-dashed p-6 text-center ${usesPaperTone ? "border-brand-blue/20 bg-brand-blue/5 text-brand-blue" : "border-brand-yellow/30 bg-brand-blue/30 text-brand-white"}`}>
+        <p className={`mb-1 font-script text-xl ${usesPaperTone ? "text-brand-blue" : "text-brand-yellow"}`}>
           No coffees received yet! (づ｡◕‿‿◕｡)づ
         </p>
-        <p className="text-xs text-gray-300 font-medium">
+        <p className={`text-xs font-medium ${usesPaperTone ? "text-brand-blue/60" : "text-gray-300"}`}>
           Be the first to buy a coffee & drop a warm note! (♡ ‿ ♡)
         </p>
       </div>
@@ -111,14 +119,14 @@ export default function SupporterWall({ supporters, showHeader = true, rows = 2 
   }
 
   const headerElement = showHeader && (
-    <div className="w-full max-w-7xl mx-auto px-6 mb-4 flex items-center justify-between border-b border-brand-yellow/20 pb-2">
+    <div className={`mx-auto mb-4 flex w-full max-w-7xl items-center justify-between border-b px-6 pb-2 ${usesPaperTone ? "border-brand-blue/20" : "border-brand-yellow/20"}`}>
       <div className="flex items-center gap-2">
-        <span className="w-2.5 h-2.5 rounded-full bg-brand-yellow animate-pulse" />
-        <h2 className="text-base sm:text-lg md:text-xl font-black text-brand-yellow uppercase tracking-wider">
+        <span className={`h-2.5 w-2.5 animate-pulse rounded-full ${usesPaperTone ? "bg-brand-blue" : "bg-brand-yellow"}`} />
+        <h2 className={`text-base font-black uppercase tracking-wider sm:text-lg md:text-xl ${usesPaperTone ? "text-brand-blue" : "text-brand-yellow"}`}>
           WALL OF APPRECIATION (づ｡◕‿‿◕｡)づ
         </h2>
       </div>
-      <span className="font-mono text-[11px] font-bold text-brand-white/80 uppercase tracking-widest hidden sm:inline-block">
+      <span className={`hidden font-mono text-[11px] font-bold uppercase tracking-widest sm:inline-block ${usesPaperTone ? "text-brand-blue/70" : "text-brand-white/80"}`}>
         {supporters.length} SUPPORTERS
       </span>
     </div>
@@ -204,5 +212,4 @@ export default function SupporterWall({ supporters, showHeader = true, rows = 2 
     </div>
   );
 }
-
 

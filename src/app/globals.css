@@ -51,6 +51,90 @@ body {
   font-family: var(--font-sans);
 }
 
+.hero-folder-enter {
+  animation: hero-folder-enter 680ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+}
+
+@keyframes hero-folder-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 160px, 0) rotate(-8deg) scale(0.88);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0) scale(1);
+  }
+}
+
+::view-transition-old(.coffee-forward),
+::view-transition-old(.coffee-back),
+::view-transition-new(.coffee-forward),
+::view-transition-new(.coffee-back) {
+  animation-duration: 440ms;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+::view-transition-old(.coffee-forward) {
+  --coffee-route-offset: -72px;
+  animation-name: coffee-route-fade, coffee-route-slide;
+  animation-direction: reverse;
+}
+
+::view-transition-new(.coffee-forward) {
+  --coffee-route-offset: 72px;
+  animation-name: coffee-route-fade, coffee-route-slide;
+}
+
+::view-transition-old(.coffee-back) {
+  --coffee-route-offset: 72px;
+  animation-name: coffee-route-fade, coffee-route-slide;
+  animation-direction: reverse;
+}
+
+::view-transition-new(.coffee-back) {
+  --coffee-route-offset: -72px;
+  animation-name: coffee-route-fade, coffee-route-slide;
+}
+
+@keyframes coffee-route-fade {
+  from {
+    filter: blur(6px);
+    opacity: 0;
+  }
+
+  to {
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+
+@keyframes coffee-route-slide {
+  from {
+    transform: translateX(var(--coffee-route-offset)) scale(0.985);
+  }
+
+  to {
+    transform: translateX(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-folder-enter {
+    animation: none;
+  }
+
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+
 /* Ẩn scrollbar */
 ::-webkit-scrollbar {
   display: none;
