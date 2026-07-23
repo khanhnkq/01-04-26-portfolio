@@ -1,0 +1,214 @@
+.archive {
+  --archive-ink: var(--bg-primary);
+  --archive-blue: var(--bg-primary);
+  --archive-yellow: var(--text-accent);
+  --archive-paper: var(--paper-bg);
+  min-height: 100vh;
+  color: var(--archive-ink);
+  background:
+    radial-gradient(circle at 1px 1px, rgb(35 140 255 / 9%) 1px, transparent 0)
+      0 0 / 28px 28px,
+    var(--archive-paper);
+}
+
+.paperTexture {
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 63px,
+      rgb(35 140 255 / 7%) 63px,
+      rgb(35 140 255 / 7%) 64px
+    );
+}
+
+.binder {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 40;
+  display: none;
+  width: 48px;
+  border-right: 3px solid var(--archive-ink);
+  background: var(--archive-blue);
+}
+
+.binderHole {
+  position: absolute;
+  left: 34px;
+  width: 28px;
+  height: 11px;
+  border: 3px solid var(--archive-ink);
+  border-radius: 999px;
+  background: #d9dde6;
+  box-shadow: 2px 2px 0 var(--archive-paper);
+}
+
+.binderHole:nth-child(1) {
+  top: 16%;
+}
+
+.binderHole:nth-child(2) {
+  top: 48%;
+}
+
+.binderHole:nth-child(3) {
+  top: 80%;
+}
+
+.displayTitle {
+  max-width: 1080px;
+  font-size: clamp(3.3rem, 7.2vw, 6.5rem);
+  font-weight: 700;
+  letter-spacing: -0.075em;
+  line-height: 0.82;
+  text-wrap: balance;
+  text-transform: uppercase;
+}
+
+.hardShadow {
+  box-shadow: 7px 7px 0 var(--archive-ink);
+}
+
+.mediaFrame {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 3px solid var(--archive-ink);
+  background: white;
+  box-shadow: 8px 8px 0 var(--archive-ink);
+  transition:
+    transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.projectLink:hover .mediaFrame,
+.projectLink:focus-visible .mediaFrame {
+  transform: translate(-3px, -3px);
+  box-shadow: 12px 12px 0 var(--archive-ink);
+}
+
+.projectLink:focus-visible {
+  outline: 3px solid var(--archive-yellow);
+  outline-offset: 8px;
+}
+
+.tape {
+  position: absolute;
+  top: -11px;
+  right: 12%;
+  z-index: 5;
+  width: 76px;
+  height: 26px;
+  transform: rotate(5deg);
+  background: rgb(255 224 107 / 88%);
+  clip-path: polygon(3% 8%, 98% 0, 94% 92%, 0 100%);
+}
+
+.placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 2rem;
+}
+
+.placeholder::before {
+  position: absolute;
+  inset: 20px;
+  border: 2px solid currentColor;
+  content: "";
+}
+
+.placeholderBlue {
+  color: white;
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 15px,
+      rgb(255 255 255 / 9%) 15px,
+      rgb(255 255 255 / 9%) 17px
+    ),
+    var(--archive-blue);
+}
+
+.placeholderYellow {
+  color: var(--archive-ink);
+  background:
+    radial-gradient(circle, rgb(35 140 255 / 20%) 2px, transparent 2px) 0 0 /
+      24px 24px,
+    var(--archive-yellow);
+}
+
+.placeholderPaper {
+  color: var(--archive-ink);
+  background:
+    linear-gradient(
+      90deg,
+      transparent 11%,
+      rgb(35 140 255 / 25%) 11%,
+      rgb(35 140 255 / 25%) calc(11% + 2px),
+      transparent calc(11% + 2px)
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 31px,
+      rgb(35 140 255 / 16%) 31px,
+      rgb(35 140 255 / 16%) 32px
+    ),
+    white;
+}
+
+.placeholderTitle {
+  position: relative;
+  z-index: 1;
+  max-width: 90%;
+  font-size: clamp(2.4rem, 6vw, 5.5rem);
+  font-weight: 700;
+  letter-spacing: -0.065em;
+  line-height: 0.82;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.indexNumber {
+  font-size: clamp(4rem, 9vw, 8rem);
+  font-weight: 700;
+  letter-spacing: -0.08em;
+  line-height: 0.78;
+}
+
+.arrowBox {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border: 2px solid var(--archive-ink);
+  background: transparent;
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+.projectLink:hover .arrowBox,
+.projectLink:focus-visible .arrowBox {
+  color: var(--archive-paper);
+  background: var(--archive-ink);
+  transform: translateX(4px);
+}
+
+@media (min-width: 768px) {
+  .binder {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mediaFrame,
+  .arrowBox {
+    transition: none;
+  }
+}

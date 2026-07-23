@@ -12,6 +12,7 @@ import { pages } from "@/components/3d/Book";
 import BottomBar from "@/components/ui/BottomBar";
 import { PROJECTS } from "@/data/projects";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 
 // Smooth Camera Controller
 const SceneRig = () => {
@@ -227,9 +228,33 @@ const BookUI = () => {
                   </p>
                 </>
               ) : (
-                <p>
-                  You&apos;ve reached the end of my 3D portfolio showcase. Feel free to browse back or check out the direct links to the projects below.
-                </p>
+                <>
+                  <p>
+                    You&apos;ve reached the end of my 3D portfolio showcase.
+                    Continue into the frontend design archive for more interface
+                    and product experiments.
+                  </p>
+                  <Link
+                    className="group pointer-events-auto mt-6 inline-flex w-fit items-center gap-3 border-2 border-brand-blue bg-brand-yellow px-5 py-3 font-mono text-xs font-black uppercase tracking-widest text-brand-blue shadow-[5px_5px_0_#238CFF] transition-transform hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-blue md:text-sm"
+                    href="/showcase"
+                  >
+                    Explore all work
+                    <svg
+                      aria-hidden="true"
+                      className="h-5 w-5 transition-transform group-hover:translate-x-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M5 12h14M14 7l5 5-5 5"
+                        stroke="currentColor"
+                        strokeLinecap="square"
+                        strokeLinejoin="miter"
+                        strokeWidth="2"
+                      />
+                    </svg>
+                  </Link>
+                </>
               )}
             </motion.div>
           </motion.div>
