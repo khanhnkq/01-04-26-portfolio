@@ -81,4 +81,22 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = [
     image: "/thauphim-preview-3d.png",
     imagePosition: "center",
   },
+  {
+    id: 8,
+    title: "DocCleaner",
+    category: "Web",
+    label: "Browser Extension / Productivity",
+    tags: ["JavaScript", "Manifest V3", "Chrome Extension"],
+    repositoryUrl: "https://github.com/khanhnkq/DocCleaner.git",
+    posterTone: "yellow",
+  },
+  {
+    id: 9,
+    title: "Pinoria",
+    category: "Web",
+    label: "Browser Extension / Media",
+    tags: ["TypeScript", "Manifest V3", "Vite"],
+    repositoryUrl: "https://github.com/khanhnkq/Pinoria.git",
+    posterTone: "blue",
+  },
 ];

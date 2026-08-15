@@ -2,36 +2,64 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import type { IconType } from "react-icons";
+import { FaAws, FaJava } from "react-icons/fa6";
+import {
+  SiApachekafka,
+  SiDocker,
+  SiFastapi,
+  SiFigma,
+  SiFlyway,
+  SiFramer,
+  SiGit,
+  SiMongodb,
+  SiMysql,
+  SiNestjs,
+  SiNextdotjs,
+  SiNginx,
+  SiNodedotjs,
+  SiPostgresql,
+  SiPython,
+  SiReact,
+  SiRedux,
+  SiSpringboot,
+  SiSupabase,
+  SiTailwindcss,
+  SiThreedotjs,
+  SiTypescript,
+} from "react-icons/si";
 import BottomBar from "@/components/ui/BottomBar";
-import Lottie from "lottie-react";
-import catPlayingAnimation from "../../../public/cat-playing-v2.json";
 
+type TechStackItem = {
+  label: string;
+  icon: IconType;
+};
 
-const TECH_STACK = [
-  { label: "React", icon: "react" },
-  { label: "Next.js", icon: "nextdotjs" },
-  { label: "TypeScript", icon: "typescript" },
-  { label: "Tailwind", icon: "tailwindcss" },
-  { label: "Framer", icon: "framer" },
-  { label: "Three.js", icon: "threedotjs" },
-  { label: "Java", icon: "oracle" },
-  { label: "Spring Boot", icon: "springboot" },
-  { label: "Python", icon: "python" },
-  { label: "FastAPI", icon: "fastapi" },
-  { label: "Node.js", icon: "nodedotjs" },
-  { label: "NestJs", icon: "nestjs" },
-  { label: "Postgres", icon: "postgresql" },
-  { label: "MySQL", icon: "mysql" },
-  { label: "MongoDB", icon: "mongodb" },
-  { label: "Supabase", icon: "supabase" },
-  { label: "Docker", icon: "docker" },
-  { label: "Nginx", icon: "nginx" },
-  { label: "AWS", icon: "amazonwebservices" },
-  { label: "Git", icon: "git" },
-  { label: "Kafka", icon: "apachekafka" },
-  { label: "Redux", icon: "redux" },
-  { label: "Flyway", icon: "flyway" },
-  { label: "Figma", icon: "figma" }
+const TECH_STACK: TechStackItem[] = [
+  { label: "React", icon: SiReact },
+  { label: "Next.js", icon: SiNextdotjs },
+  { label: "TypeScript", icon: SiTypescript },
+  { label: "Tailwind", icon: SiTailwindcss },
+  { label: "Framer", icon: SiFramer },
+  { label: "Three.js", icon: SiThreedotjs },
+  { label: "Java", icon: FaJava },
+  { label: "Spring Boot", icon: SiSpringboot },
+  { label: "Python", icon: SiPython },
+  { label: "FastAPI", icon: SiFastapi },
+  { label: "Node.js", icon: SiNodedotjs },
+  { label: "NestJs", icon: SiNestjs },
+  { label: "Postgres", icon: SiPostgresql },
+  { label: "MySQL", icon: SiMysql },
+  { label: "MongoDB", icon: SiMongodb },
+  { label: "Supabase", icon: SiSupabase },
+  { label: "Docker", icon: SiDocker },
+  { label: "Nginx", icon: SiNginx },
+  { label: "AWS", icon: FaAws },
+  { label: "Git", icon: SiGit },
+  { label: "Kafka", icon: SiApachekafka },
+  { label: "Redux", icon: SiRedux },
+  { label: "Flyway", icon: SiFlyway },
+  { label: "Figma", icon: SiFigma },
 ];
 
 export default function AboutSection() {
@@ -179,15 +207,14 @@ export default function AboutSection() {
               >
                 {[...TECH_STACK, ...TECH_STACK].map((item, idx) => (
                   <div 
-                    key={idx}
+                    key={`${item.label}-${idx}`}
                     className="w-12 h-12 md:w-16 md:h-16 shrink-0 border-2 border-brand-blue/10 rounded-xl flex items-center justify-center bg-brand-white hover:-translate-y-2 cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md p-2 md:p-3 relative"
                     title={item.label}
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img 
-                      src={`https://cdn.simpleicons.org/${item.icon}/238CFF`}
-                      alt={item.label}
-                      className="w-full h-full object-contain hover:scale-110 transition-transform duration-300 pointer-events-none"
+                    <item.icon
+                      aria-label={item.label}
+                      className="h-full w-full pointer-events-none text-brand-blue transition-transform duration-300 hover:scale-110"
+                      role="img"
                     />
                   </div>
                 ))}

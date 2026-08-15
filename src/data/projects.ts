@@ -76,12 +76,25 @@ export const PROJECTS: ProjectType[] = [
     id: 6,
     title: "DocCleaner",
     category: "CHROME EXTENSION",
-    description: "A smart Chrome Extension that automatically removes 100% of ads, bypasses paywall/blur locks on Studocu & Scribd, and exports HD A4 PDFs in 1-Click.",
+    description: "A Chrome extension that creates a distraction-free document reading experience and exports clean, high-quality A4 PDFs in one click.",
     tags: ["JavaScript", "Chrome Extension", "Manifest V3", "DOM Manipulation", "CSS Injection"],
-    demo: "https://github.com/khanhnkq/DocCleaner",
+    demo: "https://github.com/khanhnkq/DocCleaner.git",
     color: "bg-brand-yellow",
     image: "/doccleaner-preview-unified.png",
     page_cover: "/doccleaner-preview.png",
     back_page_cover: "/back_page_cover_6.png",
-  }
+  },
+  {
+    id: 7,
+    title: "Pinoria",
+    category: "CHROME EXTENSION",
+    description: "A private, local-first Pinterest downloader for saving original-quality images, GIFs, and videos with audio, including one-click and bulk board downloads.",
+    tags: ["TypeScript", "Chrome Extension", "Manifest V3", "Vite", "Vitest", "MediaBunny"],
+    demo: "https://github.com/khanhnkq/Pinoria.git",
+    color: "bg-brand-blue",
+    // Temporary artwork until the dedicated Pinoria book images are added.
+    image: "/front_paper.svg",
+    page_cover: "/front_paper.svg",
+    back_page_cover: "/back_paper.svg",
+  },
 ];
