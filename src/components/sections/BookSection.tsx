@@ -2,7 +2,7 @@
 
 import { Canvas } from "@react-three/fiber";
 import { Loader } from "@react-three/drei";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense } from "react";
 import { useAtom } from "jotai";
 import { useFrame } from "@react-three/fiber";
 import { easing } from "maath";
@@ -231,8 +231,8 @@ const BookUI = () => {
                 <>
                   <p>
                     You&apos;ve reached the end of my 3D portfolio showcase.
-                    Continue into the frontend design archive for more interface
-                    and product experiments.
+                    Continue into the project archive to explore the complete
+                    collection.
                   </p>
                   <Link
                     className="group pointer-events-auto mt-6 inline-flex w-fit items-center gap-3 border-2 border-brand-blue bg-brand-yellow px-5 py-3 font-mono text-xs font-black uppercase tracking-widest text-brand-blue shadow-[5px_5px_0_#238CFF] transition-transform hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-blue md:text-sm"
@@ -265,20 +265,11 @@ const BookUI = () => {
 };
 
 export default function BookSection() {
-  const [mounted, setMounted] = useState(false);
   const [page] = useAtom(pageAtom);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const project = page > 0 && page <= PROJECTS.length ? PROJECTS[page - 1] : null;
   const isEven = project ? ((page - 1) % 2 === 0) : true;
   const bgClass = project ? (isEven ? "bg-paper" : "bg-brand-white") : "bg-paper";
-
-  if (!mounted) {
-    return <section id="book-section" className={`relative w-full min-h-[910px] ${bgClass} transition-colors duration-500 hidden md:block`} />;
-  }
 
   return (
     <section id="book-section" className={`relative w-full min-h-[910px] ${bgClass} transition-colors duration-500 overflow-hidden flex items-center justify-center border-t-8 border-b-8 border-brand-yellow py-20 px-4 md:px-12 lg:px-24 hidden md:block`}>

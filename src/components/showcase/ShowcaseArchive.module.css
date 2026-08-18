@@ -81,15 +81,32 @@
     box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.projectLink:hover .mediaFrame,
-.projectLink:focus-visible .mediaFrame {
+.projectLink:hover .mediaFrame {
   transform: translate(-3px, -3px);
   box-shadow: 12px 12px 0 var(--archive-ink);
 }
 
-.projectLink:focus-visible {
-  outline: 3px solid var(--archive-yellow);
-  outline-offset: 8px;
+.projectChapter {
+  position: relative;
+  padding-block: 2.5rem;
+}
+
+.projectChapterViewport {
+  position: relative;
+  width: 100%;
+}
+
+.projectChapterTrack {
+  width: 100%;
+}
+
+.projectOverviewSlide,
+.projectArchitectureSlide {
+  position: relative;
+}
+
+.projectArchitectureSlide {
+  padding-top: 2rem;
 }
 
 .tape {
@@ -193,22 +210,660 @@
     transform 180ms ease;
 }
 
-.projectLink:hover .arrowBox,
-.projectLink:focus-visible .arrowBox {
+.repositoryLink:hover .arrowBox,
+.repositoryLink:focus-visible .arrowBox {
   color: var(--archive-paper);
   background: var(--archive-ink);
   transform: translateX(4px);
+}
+
+.repositoryLink:focus-visible {
+  outline: 3px solid var(--archive-yellow);
+  outline-offset: 5px;
+}
+
+.architecturePanel {
+  position: relative;
+  overflow: visible;
+  border: 3px solid var(--archive-ink);
+  padding: clamp(1.1rem, 2.8vw, 2rem);
+  background:
+    linear-gradient(rgb(35 140 255 / 8%) 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(90deg, rgb(35 140 255 / 8%) 1px, transparent 1px) 0 0 / 24px 24px,
+    var(--archive-paper);
+  box-shadow: 8px 8px 0 var(--archive-ink);
+}
+
+.architectureScrollStage {
+  position: relative;
+  z-index: 2;
+  background:
+    linear-gradient(rgb(35 140 255 / 8%) 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(90deg, rgb(35 140 255 / 8%) 1px, transparent 1px) 0 0 / 24px 24px,
+    var(--archive-paper);
+}
+
+.architecturePanel::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 78px;
+  height: 24px;
+  background: var(--archive-yellow);
+  clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 100%);
+  content: "";
+}
+
+.architecturePanelHeader {
+  display: grid;
+  align-items: start;
+  gap: 1.25rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--archive-ink);
+}
+
+.architecturePanelHeader h3 {
+  max-width: 850px;
+  margin-top: 0.75rem;
+  font-size: clamp(1.9rem, 4.4vw, 4rem);
+  font-weight: 750;
+  letter-spacing: -0.06em;
+  line-height: 0.92;
+  text-transform: uppercase;
+}
+
+.architecturePanelHeader > div > p {
+  max-width: 760px;
+  margin-top: 0.9rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.65;
+}
+
+.architectureEyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.evidenceBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 27px;
+  border: 1.5px solid var(--archive-ink);
+  padding: 0.35rem 0.55rem;
+  color: var(--archive-paper);
+  background: var(--archive-ink);
+}
+
+.evidenceBadge[data-evidence="conceptual-target"] {
+  color: var(--archive-ink);
+  background: var(--archive-yellow);
+}
+
+.evidenceBadge[data-evidence="unavailable"] {
+  color: var(--archive-ink);
+  background: #d9dde6;
+}
+
+.architectureSource,
+.architectureSourceMuted {
+  display: inline-flex;
+  width: fit-content;
+  border-bottom: 2px solid currentColor;
+  padding-bottom: 0.2rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.architectureSource {
+  transition: transform 180ms ease;
+}
+
+.architectureSource:hover,
+.architectureSource:focus-visible {
+  transform: translate(3px, -3px);
+}
+
+.architectureSource:focus-visible {
+  outline: 3px solid var(--archive-yellow);
+  outline-offset: 4px;
+}
+
+.architectureSourceMuted {
+  opacity: 0.55;
+}
+
+.architectureToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 0;
+}
+
+.scenarioTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.scenarioTab,
+.replayButton {
+  border: 2px solid var(--archive-ink);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.scenarioTab {
+  min-height: 40px;
+  padding: 0.6rem 0.8rem;
+  background: var(--archive-paper);
+}
+
+.scenarioTab[aria-selected="true"] {
+  background: var(--archive-yellow);
+  box-shadow: 3px 3px 0 var(--archive-ink);
+  transform: translate(-1px, -1px);
+}
+
+.scenarioTab:focus-visible,
+.replayButton:focus-visible {
+  outline: 3px solid var(--archive-yellow);
+  outline-offset: 3px;
+}
+
+.replayButton {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  color: var(--archive-paper);
+  background: var(--archive-ink);
+}
+
+.replayButton svg {
+  width: 18px;
+  height: 18px;
+}
+
+.replayButton:hover {
+  color: var(--archive-ink);
+  background: var(--archive-yellow);
+}
+
+.scenarioDescription {
+  max-width: 850px;
+  margin-bottom: 1.2rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  font-weight: 650;
+  line-height: 1.6;
+}
+
+.architectureViewport {
+  overflow: hidden;
+  border: 2px solid var(--archive-ink);
+  background: rgb(255 255 255 / 52%);
+}
+
+.architectureSequence {
+  display: flex;
+  width: max-content;
+  min-width: max-content;
+  justify-content: flex-start;
+  align-items: stretch;
+  overflow: visible;
+  padding: 1.5rem 2rem 2rem;
+  scrollbar-color: var(--archive-ink) var(--archive-yellow);
+  scrollbar-width: thin;
+}
+
+.architectureSequencePart {
+  display: flex;
+  align-items: center;
+  list-style: none;
+}
+
+.architectureSequenceMobile {
+  display: none;
+}
+
+.architectureNode {
+  position: relative;
+  display: flex;
+  width: 180px;
+  min-height: 160px;
+  flex: 0 0 180px;
+  flex-direction: column;
+  border: 2px solid var(--archive-ink);
+  padding: 0.8rem;
+  background: var(--archive-paper);
+  box-shadow: 4px 4px 0 var(--archive-ink);
+  list-style: none;
+}
+
+.architectureNode::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 11px;
+  height: 11px;
+  border-bottom: 1.5px solid var(--archive-ink);
+  border-left: 1.5px solid var(--archive-ink);
+  background: var(--archive-yellow);
+  content: "";
+}
+
+.architectureNode strong {
+  margin-top: 1rem;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  overflow-wrap: anywhere;
+  text-transform: uppercase;
+}
+
+.architectureNode > span:not(.architectureNodeIndex) {
+  margin-top: 0.55rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.architectureNode small {
+  margin-top: auto;
+  padding-top: 0.7rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  opacity: 0.55;
+  text-transform: uppercase;
+}
+
+.architectureNodeIndex {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.65rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.architectureConnector {
+  position: relative;
+  width: 96px;
+  min-width: 96px;
+  height: 56px;
+  list-style: none;
+}
+
+.connectorLine {
+  position: absolute;
+  top: 27px;
+  right: 0;
+  left: 0;
+  display: block;
+  height: 3px;
+  transform-origin: left center;
+  background: var(--archive-ink);
+}
+
+.architectureConnector::after {
+  position: absolute;
+  top: 22px;
+  right: -1px;
+  width: 11px;
+  height: 11px;
+  border-top: 3px solid var(--archive-ink);
+  border-right: 3px solid var(--archive-ink);
+  transform: rotate(45deg);
+  content: "";
+}
+
+.architectureConnector[data-flow-type="event"] .connectorLine {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--archive-ink) 0 8px,
+    transparent 8px 13px
+  );
+}
+
+.architectureConnector[data-flow-type="response"] .connectorLine,
+.architectureConnector[data-flow-type="response"] .connectorPacket {
+  background: var(--archive-yellow);
+  box-shadow: 0 0 0 1px var(--archive-ink);
+}
+
+.architectureConnector[data-flow-type="local"] .connectorLine {
+  height: 2px;
+  background: rgb(35 140 255 / 55%);
+}
+
+.connectorLabel {
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  z-index: 4;
+  width: max-content;
+  max-width: 132px;
+  padding: 0.15rem 0.25rem;
+  transform: translateX(-50%);
+  background: var(--archive-paper);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.connectorPacket {
+  position: absolute;
+  top: 23px;
+  z-index: 2;
+  width: 9px;
+  height: 9px;
+  border: 1.5px solid var(--archive-ink);
+  border-radius: 50%;
+  background: var(--archive-paper);
+}
+
+.architectureLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem 1.25rem;
+  margin-top: 1rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.architectureLegend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.architectureLegend li::before {
+  display: inline-block;
+  width: 22px;
+  height: 3px;
+  background: var(--archive-ink);
+  content: "";
+}
+
+.architectureLegend li[data-flow-type="event"]::before {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--archive-ink) 0 4px,
+    transparent 4px 7px
+  );
+}
+
+.architectureLegend li[data-flow-type="response"]::before {
+  height: 6px;
+  border: 1px solid var(--archive-ink);
+  background: var(--archive-yellow);
+}
+
+.architectureLegend li[data-flow-type="local"]::before {
+  height: 2px;
+  opacity: 0.5;
+}
+
+.architectureUnavailable {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+  border: 2px dashed var(--archive-ink);
+  padding: clamp(1rem, 3vw, 2rem);
+  background: rgb(255 224 107 / 28%);
+}
+
+.architectureUnavailable > span {
+  width: fit-content;
+  border: 2px solid var(--archive-ink);
+  padding: 0.5rem 0.65rem;
+  background: var(--archive-yellow);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.architectureUnavailable strong {
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+}
+
+.architectureUnavailable p {
+  max-width: 780px;
+  margin-top: 0.6rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.6;
 }
 
 @media (min-width: 768px) {
   .binder {
     display: block;
   }
+
+  .architecturePanelHeader {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .architectureUnavailable {
+    grid-template-columns: auto 1fr;
+    align-items: start;
+  }
+}
+
+@media (min-width: 1400px) {
+  .projectChapter {
+    padding-block: 0;
+  }
+
+  .projectChapterViewport {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .projectChapterTrack {
+    display: flex;
+    width: max-content;
+    height: 100%;
+    align-items: stretch;
+    will-change: transform;
+  }
+
+  .projectOverviewSlide {
+    display: flex;
+    width: var(--chapter-viewport-width);
+    height: 100%;
+    flex: 0 0 var(--chapter-viewport-width);
+    align-items: center;
+    padding-block: 3.5rem;
+  }
+
+  .projectOverviewSlide > .projectLink {
+    width: 100%;
+  }
+
+  .projectArchitectureSlide {
+    display: flex;
+    width: max-content;
+    min-width: var(--chapter-viewport-width);
+    height: 100%;
+    flex: 0 0 auto;
+    align-items: center;
+    padding: 2.5rem 0 2.5rem 4rem;
+  }
+
+  .projectArchitectureSlide .architecturePanel {
+    width: max-content;
+    min-width: calc(var(--chapter-viewport-width) - 4rem);
+  }
+
+  .projectArchitectureSlide .architectureViewport {
+    width: max-content;
+  }
+
+}
+
+@media (max-width: 1399px) {
+  .architecturePanel {
+    box-shadow: 6px 6px 0 var(--archive-ink);
+  }
+
+  .architectureSequence {
+    display: none;
+  }
+
+  .architectureSequenceMobile {
+    display: flex;
+    flex-direction: column;
+    padding: 1.15rem;
+  }
+
+  .architectureSequencePartMobile {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    list-style: none;
+  }
+
+  .architectureNode {
+    width: 100%;
+    min-height: 120px;
+    flex-basis: auto;
+  }
+
+  .architectureConnectorMobile {
+    position: relative;
+    width: 100%;
+    height: 72px;
+    list-style: none;
+  }
+
+  .connectorLineMobile {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 28px;
+    display: block;
+    width: 3px;
+    transform-origin: center top;
+    background: var(--archive-ink);
+  }
+
+  .architectureConnectorMobile::after {
+    position: absolute;
+    bottom: 0;
+    left: 23px;
+    width: 11px;
+    height: 11px;
+    border-right: 3px solid var(--archive-ink);
+    border-bottom: 3px solid var(--archive-ink);
+    transform: rotate(45deg);
+    content: "";
+  }
+
+  .architectureConnectorMobile[data-flow-type="event"] .connectorLineMobile {
+    background: repeating-linear-gradient(
+      0deg,
+      var(--archive-ink) 0 8px,
+      transparent 8px 13px
+    );
+  }
+
+  .architectureConnectorMobile[data-flow-type="response"]
+    .connectorLineMobile,
+  .architectureConnectorMobile[data-flow-type="response"]
+    .connectorPacketMobile {
+    background: var(--archive-yellow);
+    box-shadow: 0 0 0 1px var(--archive-ink);
+  }
+
+  .architectureConnectorMobile[data-flow-type="local"]
+    .connectorLineMobile {
+    width: 2px;
+    background: rgb(35 140 255 / 55%);
+  }
+
+  .connectorPacketMobile {
+    position: absolute;
+    left: 24px;
+    z-index: 2;
+    width: 9px;
+    height: 9px;
+    border: 1.5px solid var(--archive-ink);
+    border-radius: 50%;
+    background: var(--archive-paper);
+  }
+
+  .connectorLabelMobile {
+    position: absolute;
+    top: 50%;
+    left: 47px;
+    max-width: calc(100% - 55px);
+    transform: translateY(-50%);
+    font-family: var(--font-mono), monospace;
+    font-size: 0.68rem;
+    font-weight: 800;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+}
+
+@media (max-width: 767px) {
+  .architectureToolbar {
+    align-items: stretch;
+  }
+
+  .scenarioTabs {
+    width: 100%;
+  }
+
+  .scenarioTab {
+    flex: 1;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .mediaFrame,
-  .arrowBox {
+  .arrowBox,
+  .architectureSource,
+  .scenarioTab {
     transition: none;
+  }
+}
+
+@media (min-width: 1400px) and (prefers-reduced-motion: reduce) {
+  .architectureViewport {
+    overflow-x: auto;
   }
 }

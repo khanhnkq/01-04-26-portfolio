@@ -31,11 +31,10 @@ export default function Home() {
             Project collection
           </p>
           <h2 className="mt-4 text-5xl font-black uppercase leading-[0.88] tracking-[-0.06em]">
-            Frontend Design Archive
+            Project Archive
           </h2>
           <p className="mt-6 text-base font-semibold leading-relaxed text-brand-blue/75">
-            Selected interfaces, product experiments, and cross-platform
-            builds.
+            A complete collection of web, mobile, full-stack, and product work.
           </p>
           <Link
             className="mt-8 inline-flex items-center gap-5 border-2 border-brand-blue bg-brand-yellow px-5 py-4 font-mono text-xs font-black uppercase tracking-widest shadow-[6px_6px_0_#238CFF] transition-transform hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-blue"
