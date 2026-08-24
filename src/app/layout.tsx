@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat_Alternates } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import Script from "next/script";
 import "./globals.css";
 
 const montserratAlt = Montserrat_Alternates({
@@ -65,6 +66,22 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col overflow-x-hidden font-sans">
         {children}
         <Analytics />
+        <Script
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-WB6LEF0B9W"
+        />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+        >
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-WB6LEF0B9W');
+          `}
+        </Script>
       </body>
     </html>
   );
